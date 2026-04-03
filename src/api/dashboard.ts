@@ -1,0 +1,56 @@
+import http from 'src/lib/http';
+
+// ----------------------------------------------------------------------
+
+// Types
+// ----------------------------------------------------------------------
+
+export interface AmountInfo {
+  id: number | null;
+  merchantId: string | null;
+  rechargeAmount: number;
+  frozenAmount: number;
+  availableAmount: number;
+  consumptionAmount: number | null;
+  version: string | null;
+  createTime: string | null;
+  updateTime: string | null;
+  rechargeAmountTwo: string;
+  frozenAmountTwo: string;
+  availableAmountTwo: string;
+  rechargeAmountAll: number;
+  availableAmountUsd: number;
+  frozenAmountUsd: number;
+  rechargeAmountUsd: number;
+}
+
+export interface DayChartData {
+  date: string;
+  collectAmount: string;
+  payoutAmount: string;
+  collectCount: string;
+  payoutCount: string;
+  collectServiceAmount: string;
+  payoutServiceAmount: string;
+  collectServiceAmountUsd: string;
+  payoutServiceAmountUsd: string;
+  collectAmountUsd: string;
+  payoutAmountUsd: string;
+}
+
+export interface ChartDataOfDay {
+  data: DayChartData[];
+  withdrawalAmount: string;
+  rechargeAmount: string;
+  withdrawalAmountUsd: string;
+  rechargeAmountUsd: string;
+}
+
+// API Functions
+// ----------------------------------------------------------------------
+
+export const getAmountInformation = () =>
+  http.get<AmountInfo>('/admin/bill/v1/getAmountInformation');
+
+export const getChartDataOfDay = () =>
+  http.post<ChartDataOfDay>('/admin/home/v1/chartDataOfDay', new FormData());
