@@ -50,7 +50,6 @@ export interface ChartDataOfDay {
 // ----------------------------------------------------------------------
 
 export const getAmountInformation = () =>
-  http.get<AmountInfo>('/admin/bill/v1/getAmountInformation');
+  http.get<AmountInfo>('/customer/bill/v1/getAmountInformation');
 
-export const getChartDataOfDay = () =>
-  http.post<ChartDataOfDay>('/admin/home/v1/chartDataOfDay', new FormData());
+export const getChartDataOfDay = () => http.get<ChartDataOfDay>('/customer/home/v1/chartDataOfDay');

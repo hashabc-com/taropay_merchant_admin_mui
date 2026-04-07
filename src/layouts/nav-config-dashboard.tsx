@@ -57,7 +57,7 @@ export function useNavData(): NavSectionProps['data'] {
         items: [
           {
             title: t('sidebar.dashboard'),
-            path: paths.dashboard.overview,
+            path: paths.dashboard.root,
             icon: ICONS.dashboard,
           },
           {
@@ -65,9 +65,9 @@ export function useNavData(): NavSectionProps['data'] {
             path: paths.orders.root,
             icon: ICONS.order,
             children: [
-              { title: t('sidebar.receiveOrders'), path: paths.orders.receiveList },
-              { title: t('sidebar.receiveSummary'), path: paths.orders.receiveSummary },
-              { title: t('sidebar.paymentOrders'), path: paths.orders.paymentList },
+              { title: t('sidebar.paymentOrders'), path: paths.orders.paymentLists },
+              { title: t('sidebar.receiveOrders'), path: paths.orders.receiveLists },
+              { title: t('sidebar.transactionSummary'), path: paths.orders.transactionSummary },
             ],
           },
           {
@@ -75,8 +75,8 @@ export function useNavData(): NavSectionProps['data'] {
             path: paths.fund.root,
             icon: ICONS.banking,
             children: [
-              { title: t('sidebar.settlementRecords'), path: paths.fund.settlementList },
-              { title: t('sidebar.applicationApproval'), path: paths.fund.rechargeWithdraw },
+              { title: t('sidebar.fundsDetail'), path: paths.fund.fundsDetail },
+              { title: t('sidebar.rechargeWithdraw'), path: paths.fund.rechargeWithdraw },
             ],
           },
 

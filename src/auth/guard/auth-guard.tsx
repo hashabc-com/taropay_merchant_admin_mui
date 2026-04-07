@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { paths } from 'src/routes/paths';
 import { useRouter, usePathname } from 'src/routes/hooks';
@@ -6,14 +6,15 @@ import { useRouter, usePathname } from 'src/routes/hooks';
 import { hasRoutePermission, getFirstAuthorizedRoute } from 'src/utils/permission';
 
 import { useAuthStore } from 'src/stores/auth-store';
-import { getAccountPermissions } from 'src/api/login';
 
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
-import { useNavData } from '../../layouts/nav-config-dashboard';
 
 // ----------------------------------------------------------------------
+
+/** Routes that bypass permission checks (always accessible when logged in) */
+const WHITELIST_ROUTES = ['/settings/appearance'];
 
 type AuthGuardProps = {
   children: React.ReactNode;
@@ -24,49 +25,45 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const pathname = usePathname();
 
   const { authenticated, loading } = useAuthContext();
-  const { permissions, setPermissions, hasPermission } = useAuthStore();
-  const navData = useNavData();
+  const userInfo = useAuthStore((s) => s.userInfo);
 
   const [isChecking, setIsChecking] = useState(true);
-  const permissionsFetched = useRef(false);
-
-  const createRedirectPath = (currentPath: string) => {
-    const queryString = new URLSearchParams({ returnTo: pathname }).toString();
-    return `${currentPath}?${queryString}`;
-  };
-
-  // Fetch permissions in the background without blocking rendering
-  useEffect(() => {
-    if (loading || !authenticated || permissions || permissionsFetched.current) return;
-
-    permissionsFetched.current = true;
-    getAccountPermissions()
-      .then((res) => {
-        if (res.result) setPermissions(res.result);
-      })
-      .catch(() => {
-        // Permission fetch failed — nav will be empty
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authenticated, loading]);
 
   const checkAuth = (): void => {
     if (loading) return;
 
     // --- 1. Not authenticated → redirect to sign-in ---
     if (!authenticated) {
-      const redirectPath = createRedirectPath(paths.auth.jwt.signIn);
-      router.replace(redirectPath);
+      const queryString = new URLSearchParams({ returnTo: pathname }).toString();
+      router.replace(`${paths.auth.jwt.signIn}?${queryString}`);
       return;
     }
 
-    // --- 2. Route-level permission check (only when permissions exist) ---
-    if (permissions && !hasRoutePermission(pathname, permissions)) {
-      const fallback = getFirstAuthorizedRoute(navData, hasPermission);
+    // --- 2. No resourceList → clear login and redirect ---
+    const resourceList = userInfo?.resourceList;
+    if (!resourceList || resourceList.length === 0) {
+      localStorage.removeItem('_token');
+      localStorage.removeItem('_userInfo');
+      router.replace(paths.auth.jwt.signIn);
+      return;
+    }
+
+    // --- 3. Whitelist routes — always accessible ---
+    if (WHITELIST_ROUTES.some((r) => pathname.startsWith(r))) {
+      setIsChecking(false);
+      return;
+    }
+
+    // --- 4. Route-level permission check ---
+    if (!hasRoutePermission(pathname, resourceList)) {
+      const fallback = getFirstAuthorizedRoute(resourceList);
       if (fallback && fallback !== pathname) {
         router.replace(fallback);
         return;
       }
+      // No route available at all — back to sign-in
+      router.replace(paths.auth.jwt.signIn);
+      return;
     }
 
     setIsChecking(false);
@@ -75,7 +72,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   useEffect(() => {
     checkAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authenticated, loading, pathname, permissions]);
+  }, [authenticated, loading, pathname, userInfo]);
 
   if (isChecking) {
     return <SplashScreen />;

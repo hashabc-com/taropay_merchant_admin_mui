@@ -33,10 +33,10 @@ import { signOut } from 'src/auth/context/jwt/action';
 export function NavUpgrade({ sx, ...other }: BoxProps) {
   const { t } = useLanguage();
   const router = useRouter();
-  const { userInfo, permissions } = useAuthStore();
+  const userInfo = useAuthStore((s) => s.userInfo);
   const { checkUserSession } = useAuthContext();
 
-  const displayName = userInfo?.name || permissions?.user?.account || 'User';
+  const displayName = userInfo?.name || 'User';
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
@@ -116,11 +116,6 @@ export function NavUpgrade({ sx, ...other }: BoxProps) {
           <Typography variant="subtitle2" noWrap>
             {displayName}
           </Typography>
-          {permissions?.user?.account && (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-              {permissions.user.account}
-            </Typography>
-          )}
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />

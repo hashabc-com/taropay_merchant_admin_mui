@@ -23,7 +23,6 @@ export const signOut = async (): Promise<void> => {
   try {
     localStorage.removeItem('_token');
     localStorage.removeItem('_userInfo');
-    localStorage.removeItem('_permissions');
     useCountryStore.getState().clearSelectedCountry();
     useMerchantStore.getState().clearSelectedMerchant();
 
@@ -31,7 +30,6 @@ export const signOut = async (): Promise<void> => {
       token: null,
       isAuthenticated: false,
       userInfo: null,
-      permissions: null,
     });
   } catch (error) {
     console.error('Error during sign out:', error);

@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
     server: {
       host: true,
       proxy: {
-        '/admin': {
+        '/customer': {
           target: env.VITE_PROXY_TARGET,
           changeOrigin: true,
           secure: false,

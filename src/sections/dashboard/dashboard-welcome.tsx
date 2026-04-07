@@ -100,7 +100,7 @@ export function DashboardWelcome() {
           <Button
             variant="outlined"
             startIcon={<Iconify icon="solar:download-minimalistic-bold" />}
-            onClick={() => router.push(paths.orders.receiveList)}
+            onClick={() => router.push(paths.orders.receiveLists)}
             sx={{
               fontWeight: 600,
               color: 'common.white',
@@ -113,7 +113,7 @@ export function DashboardWelcome() {
           <Button
             variant="outlined"
             startIcon={<Iconify icon="solar:upload-minimalistic-bold" />}
-            onClick={() => router.push(paths.orders.paymentList)}
+            onClick={() => router.push(paths.orders.paymentLists)}
             sx={{
               fontWeight: 600,
               color: 'common.white',

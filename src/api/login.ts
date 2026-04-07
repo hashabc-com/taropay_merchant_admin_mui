@@ -37,14 +37,13 @@ export interface UserInfo {
 
 // ----------------------------------------------------------------------
 
-export const loginApi = (data: LoginForm) => http.post('/admin/login/form', data);
+export const loginApi = (data: LoginForm) => http.post('/customer/login/form', data);
 
 export const getVerifyCode = () =>
-  http.post('/admin/googleVerify/v1/getPictureVerificationCode', {});
+  http.post('/customer/googleVerify/v2/getPictureVerificationCode', {});
 
-export const getKey = (data: Partial<UserInfo>) => http.post('/admin/googleVerify/v1/getKey', data);
+export const getKey = (data: Partial<UserInfo>) =>
+  http.post('/customer/googleVerify/v1/getKey', data);
 
 export const bindKey = (data: Partial<UserInfo>) =>
-  http.post('/admin/googleVerify/v1/bindKey', data);
-
-export const getAccountPermissions = () => http.get('/admin/authority/v1/getUserAuthority');
+  http.post('/customer/googleVerify/v1/bindKey', data);

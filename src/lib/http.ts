@@ -63,29 +63,17 @@ class HttpClient {
       const rc = config as RequestConfig;
 
       if (!isLoginPage) {
-        // auto inject country
-        if (rc.autoAddCountry !== false) {
-          try {
-            const raw = localStorage.getItem('country-storage');
-            if (raw) {
-              const { state } = JSON.parse(raw);
-              if (state?.selectedCountry?.code) {
-                this.addParam(config, 'country', state.selectedCountry.code);
-              }
-            }
-          } catch {
-            /* noop */
-          }
-        }
+        // country auto-injection disabled — merchant admin backend
+        // determines the country from the merchant's binding.
 
-        // auto inject merchantId
+        // auto inject merchantId from userInfo (set during login)
         if (rc.autoAddMerchantId !== false) {
           try {
-            const raw = localStorage.getItem('merchant-storage');
+            const raw = localStorage.getItem('_userInfo');
             if (raw) {
-              const { state } = JSON.parse(raw);
-              if (state?.selectedMerchant?.appid) {
-                this.addParam(config, 'merchantId', state.selectedMerchant.appid);
+              const userInfo = JSON.parse(raw);
+              if (userInfo?.merchantId) {
+                this.addParam(config, 'merchantId', userInfo.merchantId);
               }
             }
           } catch {
@@ -110,7 +98,6 @@ class HttpClient {
           // Lazy import to avoid circular dependency
           localStorage.removeItem('_token');
           localStorage.removeItem('_userInfo');
-          localStorage.removeItem('_permissions');
           const redirect = window.location.pathname;
           if (!redirect.startsWith('/auth')) {
             window.location.href = `/auth/jwt/sign-in?returnTo=${encodeURIComponent(redirect)}`;

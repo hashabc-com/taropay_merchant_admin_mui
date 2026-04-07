@@ -18,14 +18,14 @@ export interface OrderListParams {
 }
 
 export const getOrderList = (params: OrderListParams) =>
-  http.get('/admin/collection/v1/list', params);
+  http.get('/customer/collection/v1/list', params);
 
 export const getCollectionOrderStats = (params: {
   startTime?: string;
   endTime?: string;
   pickupCenter?: string;
   status?: string;
-}) => http.get('/admin/collection/orderdata', params);
+}) => http.get('/customer/collection/orderdata', params);
 
 // -- Receive summary --
 
@@ -38,10 +38,10 @@ export interface ReceiveSummaryParams {
 }
 
 export const getReceiveSummary = (params: ReceiveSummaryParams) =>
-  http.get('/admin/collection/v1/summaryList', params);
+  http.get('/customer/collection/v1/summaryList', params);
 
 export const prepareExportReceive = (params: { startTime?: string; endTime?: string }) =>
-  http.get('/admin/collection/prepareExportData', params);
+  http.get('/customer/collection/prepareExport', params);
 
 // -- Payment (disbursement) list --
 
@@ -59,17 +59,54 @@ export interface PaymentListParams {
 }
 
 export const getPaymentLists = (params: PaymentListParams) =>
-  http.get('/admin/disbursement/v1/list', params);
+  http.get('/customer/disbursement/v1/list', params);
 
 export const getDisbursementOrderStats = (params: {
   startTime?: string;
   endTime?: string;
   pickupCenter?: string;
   status?: string;
-}) => http.get('/admin/disbursement/orderdata', params);
+}) => http.get('/customer/disbursement/orderdata', params);
 
-export const payOutReject = (data: FormData) => http.post('/admin/disbursement/payOutReject', data);
+export const payOutReject = (data: FormData) =>
+  http.post('/customer/disbursement/payOutReject', data);
+
+// -- Transaction summary (交易汇总) --
+
+export interface TransactionSummaryParams {
+  pageNum: number;
+  pageSize: number;
+  startTime?: string;
+  endTime?: string;
+}
+
+export interface TransactionSummaryRow {
+  id?: number;
+  dealTime?: string;
+  localTime?: string;
+  payinAmount: number | string;
+  payinBillCount?: number;
+  payinServiceAmount: number | string;
+  payinTotalAmount: number | string;
+  payoutAmount: number | string;
+  payoutBillCount?: number;
+  payoutServiceAmount: number | string;
+  payoutTotalAmount: number | string;
+  rechargeAmount: number | string;
+  withdrawalAmount: number | string;
+  finalAmount: number | string;
+  finalAmountTwo?: number | string;
+}
+
+export const getTransactionSummary = (params: TransactionSummaryParams) =>
+  http.get('/customer/disbursement/v1/summaryList', params);
+
+export const prepareExportSummary = (params: { startTime?: string; endTime?: string }) =>
+  http.get('/customer/disbursement/prepareExportSummary', params);
+
+export const prepareExportPayment = (params: { startTime: string; endTime: string }) =>
+  http.get('/customer/disbursement/prepareExport', params);
 
 // -- Common dicts --
 
-export const getPaymentChannel = () => http.get('/admin/paymentChannel/getChannelByCountry');
+export const getPaymentChannel = () => http.get('/customer/paymentChannel/getChannelByCountry');

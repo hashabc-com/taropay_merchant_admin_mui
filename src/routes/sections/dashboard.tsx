@@ -19,7 +19,7 @@ const OrderReceiveList = lazy(() => import('src/pages/orders/receive-list'));
 
 // Dashboard
 const DashboardOverview = lazy(() => import('src/pages/dashboard/overview'));
-const OrderReceiveSummary = lazy(() => import('src/pages/orders/receive-summary'));
+const OrderTransactionSummary = lazy(() => import('src/pages/orders/transaction-summary'));
 const OrderPaymentList = lazy(() => import('src/pages/orders/payment-list'));
 
 // Fund
@@ -50,26 +50,23 @@ export const dashboardRoutes: RouteObject[] = [
   {
     element: CONFIG.auth.skip ? dashboardLayout() : <AuthGuard>{dashboardLayout()}</AuthGuard>,
     children: [
-      {
-        path: 'dashboard',
-        children: [{ path: 'overview', element: <DashboardOverview /> }],
-      },
+      { index: true, element: <DashboardOverview /> },
       {
         path: 'orders',
         children: [
-          { path: 'receive-list', element: <OrderReceiveList /> },
-          { path: 'receive-summary', element: <OrderReceiveSummary /> },
-          { path: 'payment-list', element: <OrderPaymentList /> },
+          { path: 'payment-lists', element: <OrderPaymentList /> },
+          { path: 'receive-lists', element: <OrderReceiveList /> },
+          { path: 'transaction-summary', element: <OrderTransactionSummary /> },
         ],
       },
       {
         path: 'fund',
         children: [
-          { path: 'settlement-list', element: <FundSettlementList /> },
+          { path: 'funds-detail', element: <FundSettlementList /> },
           { path: 'recharge-withdraw', element: <FundRechargeWithdraw /> },
         ],
       },
-      { path: 'export-management', element: <ExportManagement /> },
+      { path: 'export/management', element: <ExportManagement /> },
     ],
   },
 ];

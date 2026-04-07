@@ -1,73 +1,42 @@
+import type { IResource } from 'src/stores/auth-store';
 import type { NavSectionProps, NavItemDataProps } from 'src/components/nav-section';
 
 // ----------------------------------------------------------------------
 
-type MenuItem = { name: string; url: string };
-type Permissions = { menu: MenuItem[]; user: { roleId: number; account: string } };
-
 /**
- * Check if a route is accessible based on user permissions.
- * Uses prefix matching so that parent permissions (e.g. "/order")
- * grant access to child routes (e.g. "/orders/receive-list").
+ * Check if a route is accessible based on the user's resource list.
+ * Uses **exact match** on `resource.url` where `type === 'menu'`.
+ * (Aligned with taropay_merchant_admin.)
  */
-export function hasRoutePermission(route: string, permissions?: Permissions | null): boolean {
-  if (!permissions?.menu?.length) return false;
+export function hasRoutePermission(route: string, resourceList?: IResource[]): boolean {
+  if (!resourceList?.length) return false;
 
   const normalized = route === '/' ? '/' : route.replace(/\/$/, '');
 
-  return permissions.menu.some((item) => {
-    const menuUrl = item.url === '/' ? '/' : item.url.replace(/\/$/, '');
-
-    // Exact match
-    if (menuUrl === normalized) return true;
-
-    // Prefix match — parent permission grants access to children
-    if (
-      normalized.startsWith(`${menuUrl}/`) ||
-      normalized.startsWith(`${menuUrl.replace(/s$/, '')}s/`)
-    ) {
-      return true;
-    }
-
-    return false;
-  });
+  return resourceList.some(
+    (r) => r.type === 'menu' && (r.url === '/' ? '/' : r.url.replace(/\/$/, '')) === normalized
+  );
 }
 
 /**
- * Get the first authorized route by traversing the nav config in sidebar display order.
- * Returns the path of the first leaf item that passes the permission check.
+ * Get the first authorized route from the resource list.
+ * Returns the URL of the first `type === 'menu'` resource.
  */
-export function getFirstAuthorizedRoute(
-  navData: NavSectionProps['data'],
-  checkPermission: (url: string) => boolean
-): string | null {
-  for (const group of navData) {
-    for (const item of group.items) {
-      const found = findFirstLeaf(item, checkPermission);
-      if (found) return found;
-    }
-  }
-  return null;
+export function getFirstAuthorizedRoute(resourceList?: IResource[]): string | null {
+  if (!resourceList?.length) return null;
+  const first = resourceList.find((r) => r.type === 'menu');
+  return first?.url ?? null;
 }
 
-function findFirstLeaf(
-  item: NavItemDataProps,
-  checkPermission: (url: string) => boolean
-): string | null {
-  // Has children — recurse into first authorized child
-  if (item.children?.length) {
-    for (const child of item.children) {
-      const found = findFirstLeaf(child, checkPermission);
-      if (found) return found;
-    }
-    return null;
-  }
-
-  // Leaf item — check permission
-  if (item.path && checkPermission(item.path)) return item.path;
-
-  return null;
+/**
+ * Get all authorized route paths from the resource list.
+ */
+export function getAllAuthorizedRoutes(resourceList?: IResource[]): string[] {
+  if (!resourceList?.length) return [];
+  return resourceList.filter((r) => r.type === 'menu').map((r) => r.url);
 }
+
+// ------ Nav filtering (used by layout) ------
 
 /**
  * Recursively filter navigation data, keeping only items the user has permission to see.
@@ -75,25 +44,22 @@ function findFirstLeaf(
  */
 export function filterNavByPermission(
   data: NavSectionProps['data'],
-  checkPermission: (url: string) => boolean
+  resourceList?: IResource[]
 ): NavSectionProps['data'] {
   return data
     .map((group) => ({
       ...group,
-      items: filterNavItems(group.items, checkPermission),
+      items: filterNavItems(group.items, resourceList),
     }))
     .filter((group) => group.items.length > 0);
 }
 
-function filterNavItems(
-  items: NavItemDataProps[],
-  checkPermission: (url: string) => boolean
-): NavItemDataProps[] {
+function filterNavItems(items: NavItemDataProps[], resourceList?: IResource[]): NavItemDataProps[] {
   return items
     .map((item) => {
       // Has children — recurse, keep parent only if children remain
       if (item.children?.length) {
-        const filteredChildren = filterNavItems(item.children, checkPermission);
+        const filteredChildren = filterNavItems(item.children, resourceList);
         if (filteredChildren.length > 0) {
           return { ...item, children: filteredChildren };
         }
@@ -107,7 +73,7 @@ function filterNavItems(
 
       // Leaf item — check permission by path
       if (item.path) {
-        return checkPermission(item.path) ? item : null;
+        return hasRoutePermission(item.path, resourceList) ? item : null;
       }
 
       // Items without path (unlikely) — keep

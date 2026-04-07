@@ -36,7 +36,6 @@ export function AccountPopover({ sx, ...other }: AccountPopoverProps) {
   const { checkUserSession } = useAuthContext();
 
   const userInfo = useAuthStore((s) => s.userInfo);
-  const account = useAuthStore((s) => s.permissions?.user?.account);
 
   const displayName = userInfo?.name ?? 'User';
 
@@ -76,12 +75,6 @@ export function AccountPopover({ sx, ...other }: AccountPopoverProps) {
           <Typography variant="subtitle2" noWrap>
             {displayName}
           </Typography>
-
-          {account && (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-              {account}
-            </Typography>
-          )}
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />

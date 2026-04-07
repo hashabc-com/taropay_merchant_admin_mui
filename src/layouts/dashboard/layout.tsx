@@ -19,7 +19,7 @@ import { useAuthStore } from 'src/stores/auth-store';
 import { Logo } from 'src/components/logo';
 import { CountryTime } from 'src/components/country-time';
 import { useSettingsContext } from 'src/components/settings';
-import { CountryMerchantSelector } from 'src/components/country-merchant-selector';
+import { CurrencySelector } from 'src/components/country-merchant-selector';
 
 import { NavMobile } from './nav-mobile';
 import { VerticalDivider } from './content';
@@ -65,15 +65,14 @@ export function DashboardLayout({
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 
-  // Subscribe to `permissions` so the component re-renders when they load
-  const permissions = useAuthStore((s) => s.permissions);
-  const hasPermission = useAuthStore((s) => s.hasPermission);
+  // Subscribe to `userInfo` so the component re-renders when resourceList changes
+  const resourceList = useAuthStore((s) => s.userInfo?.resourceList);
   const dashboardNavData = useNavData();
   const rawNavData = slotProps?.nav?.data ?? dashboardNavData;
   const navData = useMemo(
-    () => filterNavByPermission(rawNavData, hasPermission),
+    () => filterNavByPermission(rawNavData, resourceList),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [rawNavData, permissions]
+    [rawNavData, resourceList]
   );
 
   const isNavMini = settings.state.navLayout === 'mini';
@@ -142,14 +141,14 @@ export function DashboardLayout({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
           {/** @slot Searchbar */}
           <Searchbar data={navData} />
-          {/** @slot Divider — separates context selectors from utility buttons */}
+          {/** @slot Divider — separates search from utility buttons */}
           <Divider
             orientation="vertical"
             flexItem
             sx={{ mx: 0.5, display: { xs: 'none', sm: 'flex' } }}
           />
-          {/** @slot Country / Merchant selector */}
-          <CountryMerchantSelector />
+          {/** @slot Currency selector */}
+          <CurrencySelector />
 
           {/** @slot Language popover — hidden on mobile */}
           <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>

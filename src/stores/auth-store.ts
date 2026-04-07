@@ -1,50 +1,54 @@
 import { create } from 'zustand';
 
+import { useMerchantStore } from './merchant-store';
+import { useCountryStore, type SupportedCurrency } from './country-store';
+
 // ----------------------------------------------------------------------
+
+export interface IResource {
+  id: number;
+  name: string;
+  type: 'menu' | 'button';
+  url: string;
+  parentId: number;
+  parentIds: string;
+  permission: string;
+  available: boolean;
+}
 
 type UserInfo = {
   id: number;
   name: string;
-};
-
-type MenuItem = {
-  name: string;
-  url: string;
-};
-
-type Permissions = {
-  menu: MenuItem[];
-  user: {
-    roleId: number;
-    account: string;
-  };
+  merchantId?: string;
+  countryCode?: string;
+  currency?: string;
+  resourceList?: IResource[];
 };
 
 interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   userInfo: UserInfo | null;
-  permissions: Permissions | null;
   login: (token: string, userInfo: UserInfo) => void;
   logout: () => void;
-  setPermissions: (permissions: Permissions) => void;
-  hasPermission: (url: string) => boolean;
 }
 
 // Hydrate from localStorage
 const initialToken = localStorage.getItem('_token');
 const initialUserInfo = JSON.parse(localStorage.getItem('_userInfo') || 'null');
-const initialPermissions = JSON.parse(localStorage.getItem('_permissions') || 'null');
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   token: initialToken,
   isAuthenticated: Boolean(initialToken),
   userInfo: initialUserInfo,
-  permissions: initialPermissions,
 
   login: (token, userInfo) => {
     localStorage.setItem('_token', token);
     localStorage.setItem('_userInfo', JSON.stringify(userInfo));
+    // Sync displayCurrency from the merchant's bound currency (same as old project)
+    if (userInfo.currency) {
+      useCountryStore.getState().setDisplayCurrency(userInfo.currency as SupportedCurrency);
+    }
     set({ token, isAuthenticated: true, userInfo });
   },
 
@@ -54,38 +58,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     localStorage.removeItem('_token');
     localStorage.removeItem('_userInfo');
-    localStorage.removeItem('_permissions');
-    set({ token: null, isAuthenticated: false, userInfo: null, permissions: null });
+    set({ token: null, isAuthenticated: false, userInfo: null });
+
+    // Clear related stores
+    useCountryStore.getState().clearSelectedCountry();
+    useMerchantStore.getState().clearSelectedMerchant();
 
     window.location.href = `/auth/jwt/sign-in?returnTo=${encodeURIComponent(redirect)}`;
-  },
-
-  setPermissions: (permissions) => {
-    localStorage.setItem('_permissions', JSON.stringify(permissions));
-    set({ permissions });
-  },
-
-  hasPermission: (url) => {
-    const { permissions } = get();
-    if (!permissions?.menu) return false;
-
-    const normalizedUrl = url === '/' ? '/' : url.replace(/\/$/, '');
-
-    return permissions.menu.some((item) => {
-      const menuUrl = item.url === '/' ? '/' : item.url.replace(/\/$/, '');
-
-      // Exact match
-      if (menuUrl === normalizedUrl) return true;
-
-      // Prefix match — e.g. menu "/order" grants access to "/orders/receive-list"
-      if (
-        normalizedUrl.startsWith(`${menuUrl}/`) ||
-        normalizedUrl.startsWith(`${menuUrl.replace(/s$/, '')}s/`)
-      ) {
-        return true;
-      }
-
-      return false;
-    });
   },
 }));

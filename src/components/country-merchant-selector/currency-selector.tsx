@@ -1,7 +1,12 @@
+import { toast } from 'sonner';
+import { useEffect, useCallback } from 'react';
+
 import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
+import { useAuthStore } from 'src/stores/auth-store';
+import { useLanguage } from 'src/context/language-provider';
 import { useCountryStore, SUPPORTED_CURRENCIES } from 'src/stores/country-store';
 
 import { compactSelectSx } from './styles';
@@ -20,11 +25,43 @@ const currencyToCountryCode: Record<string, string> = {
   EUR: 'EU',
   GBP: 'GB',
   HKD: 'HK',
+  PKR: 'PK',
 };
 
 export function CurrencySelector() {
-  const { displayCurrency, selectedCountry, setDisplayCurrency } = useCountryStore();
-  const defaultCurrency = selectedCountry?.currency;
+  const { t } = useLanguage();
+  const { displayCurrency, setDisplayCurrency, setRates } = useCountryStore();
+  const userInfo = useAuthStore((s) => s.userInfo);
+  const defaultCurrency = userInfo?.currency as string;
+
+  const fetchRates = useCallback(
+    async (currency: string) => {
+      try {
+        const response = await fetch(`https://open.er-api.com/v6/latest/${currency}`);
+        const data = await response.json();
+        if (data.result === 'success' && data.rates) {
+          setRates(data.rates);
+        }
+      } catch {
+        toast.error(t('common.fetchRateFailed'));
+      }
+    },
+    [setRates, t]
+  );
+
+  // Sync displayCurrency on mount & when userInfo changes
+  useEffect(() => {
+    if (defaultCurrency && !displayCurrency) {
+      setDisplayCurrency(defaultCurrency as any);
+    }
+  }, [defaultCurrency, displayCurrency, setDisplayCurrency]);
+
+  // Fetch exchange rates for the default currency
+  useEffect(() => {
+    if (defaultCurrency) {
+      fetchRates(defaultCurrency);
+    }
+  }, [defaultCurrency, fetchRates]);
 
   const allCurrencies = [
     ...(defaultCurrency && !SUPPORTED_CURRENCIES.includes(defaultCurrency as any)
@@ -42,7 +79,7 @@ export function CurrencySelector() {
       sx={{ ...compactSelectSx, minWidth: 80 }}
     >
       {allCurrencies.map((currency) => {
-        const countryCode = currencyToCountryCode[currency] || selectedCountry?.code || '';
+        const countryCode = currencyToCountryCode[currency] || '';
         return (
           <MenuItem key={currency} value={currency}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

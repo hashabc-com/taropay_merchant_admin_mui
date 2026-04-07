@@ -14,24 +14,29 @@ export const paths = {
       signUp: `${ROOTS.AUTH}/jwt/sign-up`,
     },
   },
-  // DASHBOARD
+  // DASHBOARD (首页)
   dashboard: {
-    root: '/dashboard',
-    overview: '/dashboard/overview',
+    root: '/',
   },
-  // ORDERS
+  // ORDERS (订单管理)
   orders: {
-    root: '/orders',
-    receiveList: '/orders/receive-list',
-    receiveSummary: '/orders/receive-summary',
-    paymentList: '/orders/payment-list',
+    root: '/order',
+    paymentLists: '/orders/payment-lists',
+    receiveLists: '/orders/receive-lists',
+    transactionSummary: '/orders/transaction-summary',
   },
-  // FUND
+  // FUND (资金管理)
   fund: {
     root: '/fund',
-    settlementList: '/fund/settlement-list',
+    fundsDetail: '/fund/funds-detail',
     rechargeWithdraw: '/fund/recharge-withdraw',
   },
-  // EXPORT MANAGEMENT
-  exportManagement: '/export-management',
+  // SECRET (密钥管理)
+  secret: {
+    management: '/secret/management',
+  },
+  // EXPORT MANAGEMENT (导出管理)
+  exportManagement: '/export/management',
+  // SUB-ACCOUNT MANAGEMENT (子账号管理)
+  subAccountManagement: '/sub-account-management',
 };
