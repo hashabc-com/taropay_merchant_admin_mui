@@ -52,4 +52,5 @@ export interface ChartDataOfDay {
 export const getAmountInformation = () =>
   http.get<AmountInfo>('/customer/bill/v1/getAmountInformation');
 
-export const getChartDataOfDay = () => http.get<ChartDataOfDay>('/customer/home/v1/chartDataOfDay');
+export const getChartDataOfDay = () =>
+  http.post<ChartDataOfDay>('/customer/home/v1/chartDataOfDay');

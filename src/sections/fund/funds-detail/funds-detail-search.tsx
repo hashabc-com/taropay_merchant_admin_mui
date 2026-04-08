@@ -14,16 +14,11 @@ import { useLanguage } from 'src/context/language-provider';
 import { Iconify } from 'src/components/iconify';
 import { DateTimeRangePicker } from 'src/components/date-time-range-picker';
 
-import { FIELD_KEYS, AUDIT_STATUS_MAP } from './hooks';
+import { FIELD_KEYS, FUND_TYPE_MAP } from './hooks';
 
 // ----------------------------------------------------------------------
 
-const TYPE_OPTIONS: Record<string, string> = {
-  '2': 'fund.fundsDetail.merchantRecharge',
-  '5': 'fund.fundsDetail.merchantWithdrawal',
-};
-
-export function RechargeWithdrawSearch() {
+export function FundsDetailSearch() {
   const { t } = useLanguage();
   const { values, setField, hasFilters, handleSearch, handleReset } = useListSearch(FIELD_KEYS);
 
@@ -35,54 +30,29 @@ export function RechargeWithdrawSearch() {
           values.endTime ? dayjs(values.endTime) : null,
         ]}
         onChange={([start, end]) => {
-          setField('startTime', start ? start.format('YYYY-MM-DD HH:mm:ss') : '');
-          setField('endTime', end ? end.format('YYYY-MM-DD HH:mm:ss') : '');
+          setField('startTime', start ? start.format('YYYY-MM-DD') : '');
+          setField('endTime', end ? end.format('YYYY-MM-DD') : '');
         }}
-        showTime
         size="small"
         startLabel={t('common.startTime')}
         endLabel={t('common.endTime')}
       />
 
-      <FormControl size="small" sx={{ width: 140 }}>
-        <InputLabel shrink>{t('fund.rechargeWithdraw.type')}</InputLabel>
+      <FormControl size="small" sx={{ width: 160 }}>
+        <InputLabel shrink>{t('fund.fundsDetail.fundType')}</InputLabel>
         <Select
           displayEmpty
-          label={t('fund.rechargeWithdraw.type')}
+          label={t('fund.fundsDetail.fundType')}
           notched
           value={values.type}
           onChange={(e) => setField('type', e.target.value)}
-          MenuProps={{ disableAutoFocus: true }}
           renderValue={(sel) => {
             if (!sel) return <span style={{ color: '#aaa' }}>{t('common.pleaseSelect')}</span>;
-            const info = TYPE_OPTIONS[sel];
+            const info = FUND_TYPE_MAP[sel];
             return info ? t(info) : sel;
           }}
         >
-          {Object.entries(TYPE_OPTIONS).map(([key, label]) => (
-            <MenuItem key={key} value={key}>
-              {t(label)}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl size="small" sx={{ width: 130 }}>
-        <InputLabel shrink>{t('fund.rechargeWithdraw.auditStatus')}</InputLabel>
-        <Select
-          displayEmpty
-          label={t('fund.rechargeWithdraw.auditStatus')}
-          notched
-          value={values.status}
-          onChange={(e) => setField('status', e.target.value)}
-          MenuProps={{ disableAutoFocus: true }}
-          renderValue={(sel) => {
-            if (!sel) return <span style={{ color: '#aaa' }}>{t('common.pleaseSelect')}</span>;
-            const info = AUDIT_STATUS_MAP[sel];
-            return info ? t(info.label) : sel;
-          }}
-        >
-          {Object.entries(AUDIT_STATUS_MAP).map(([key, { label }]) => (
+          {Object.entries(FUND_TYPE_MAP).map(([key, label]) => (
             <MenuItem key={key} value={key}>
               {t(label)}
             </MenuItem>

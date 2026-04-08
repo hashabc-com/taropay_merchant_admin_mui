@@ -23,7 +23,7 @@ const OrderTransactionSummary = lazy(() => import('src/pages/orders/transaction-
 const OrderPaymentList = lazy(() => import('src/pages/orders/payment-list'));
 
 // Fund
-const FundSettlementList = lazy(() => import('src/pages/fund/settlement-list'));
+const FundFundsDetail = lazy(() => import('src/pages/fund/funds-detail'));
 const FundRechargeWithdraw = lazy(() => import('src/pages/fund/recharge-withdraw'));
 
 // Top-level pages
@@ -54,15 +54,15 @@ export const dashboardRoutes: RouteObject[] = [
       {
         path: 'orders',
         children: [
-          { path: 'payment-lists', element: <OrderPaymentList /> },
           { path: 'receive-lists', element: <OrderReceiveList /> },
+          { path: 'payment-lists', element: <OrderPaymentList /> },
           { path: 'transaction-summary', element: <OrderTransactionSummary /> },
         ],
       },
       {
         path: 'fund',
         children: [
-          { path: 'funds-detail', element: <FundSettlementList /> },
+          { path: 'funds-detail', element: <FundFundsDetail /> },
           { path: 'recharge-withdraw', element: <FundRechargeWithdraw /> },
         ],
       },

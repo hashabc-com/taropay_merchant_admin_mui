@@ -59,24 +59,35 @@ export function useNavData(): NavSectionProps['data'] {
             title: t('sidebar.dashboard'),
             path: paths.dashboard.root,
             icon: ICONS.dashboard,
+            menuId: 1,
           },
           {
             title: t('sidebar.orderManagement'),
             path: paths.orders.root,
             icon: ICONS.order,
+            menuId: 2,
             children: [
-              { title: t('sidebar.paymentOrders'), path: paths.orders.paymentLists },
-              { title: t('sidebar.receiveOrders'), path: paths.orders.receiveLists },
-              { title: t('sidebar.transactionSummary'), path: paths.orders.transactionSummary },
+              { title: t('sidebar.paymentOrders'), path: paths.orders.paymentLists, menuId: 3 },
+              { title: t('sidebar.receiveOrders'), path: paths.orders.receiveLists, menuId: 4 },
+              {
+                title: t('sidebar.transactionSummary'),
+                path: paths.orders.transactionSummary,
+                menuId: 5,
+              },
             ],
           },
           {
             title: t('sidebar.fundManagement'),
             path: paths.fund.root,
             icon: ICONS.banking,
+            menuId: 6,
             children: [
-              { title: t('sidebar.fundsDetail'), path: paths.fund.fundsDetail },
-              { title: t('sidebar.rechargeWithdraw'), path: paths.fund.rechargeWithdraw },
+              { title: t('sidebar.fundsDetail'), path: paths.fund.fundsDetail, menuId: 7 },
+              {
+                title: t('sidebar.rechargeWithdraw'),
+                path: paths.fund.rechargeWithdraw,
+                menuId: 8,
+              },
             ],
           },
 
@@ -84,6 +95,7 @@ export function useNavData(): NavSectionProps['data'] {
             title: t('sidebar.exportManagement'),
             path: paths.exportManagement,
             icon: ICONS.folder,
+            menuId: 10,
           },
           {
             title: t('sidebar.apiDocs'),

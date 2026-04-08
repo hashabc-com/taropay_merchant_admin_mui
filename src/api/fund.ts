@@ -4,10 +4,9 @@ import http from 'src/lib/http';
 
 // Types
 
-export type SettlementListParams = {
+export type FundChangesParams = {
   pageNum?: number;
   pageSize?: number;
-  status?: string;
   type?: string;
   startTime?: string;
   endTime?: string;
@@ -22,50 +21,37 @@ export type RechargeWithdrawParams = {
   endTime?: string;
 };
 
-export type ApprovePayload = {
-  merchantId: string;
-  id: number;
-  exchangeRate?: string;
-  costRate?: string;
-  rechargeAmount: number;
-  finalAmount?: string | number;
-  withdrawalType: string;
-  type?: string;
-  status: number;
-  country?: string;
-  withdrawalPass?: string;
-  gauthcode?: string;
-  remark?: string;
-};
-
 // ----------------------------------------------------------------------
 
-// Settlement records
+// 资金明细
+export const getFundChanges = (params: FundChangesParams) =>
+  http.get('/customer/funds/v1/changes', params);
 
-export const getSettlementList = (params: SettlementListParams) =>
-  http.get('/admin/bill/v1/getBillList', params);
-
-// Recharge & Withdraw approval
-
+// 充值提现记录列表
 export const getRechargeWithdrawList = (params: RechargeWithdrawParams) =>
-  http.get('/admin/approval/getWithdrawalList', params);
+  http.get('/customer/bill/v1/getBillList', params);
 
-export const approveWithdrawal = (data: ApprovePayload) =>
-  http.post('/admin/approval/approveWithdrawal', data);
+// 收U地址
+export const getRecordAddress = () => http.get('/customer/dict/v1/getRecordAddress');
 
-export const approveRecharge = (data: ApprovePayload) =>
-  http.post('/admin/recharge/v1/approveRecharge', data);
+// 可用金额信息
+export const getTotalAmount = () => http.get('/customer/bill/v1/getAmountInformation');
 
-// Image download (for recharge vouchers)
+// 汇率
+export const getRate = () => http.get('/customer/home/v1/getExchangeRate');
 
-export const getImg = (params: { mediaId: string; type: boolean }) =>
-  http.get('/admin/common/getImg', params);
+// 充值申请
+export const requestRecharge = (data: unknown) => http.post('/customer/bill/requestRecharge', data);
 
-export const downloadImg = async (params: { mediaId: string; type: boolean }, filename: string) => {
-  const url = await getImg(params);
-  if (!url) return;
-  const a = document.createElement('a');
-  a.href = typeof url === 'string' ? url : '';
-  a.download = filename;
-  a.click();
+// 提现申请
+export const requestWithdraw = (data: unknown) =>
+  http.post('/customer/bill/v2/applyFor/withdraw', data);
+
+// 上传媒体文件
+export const uploadMedia = (file: File) => {
+  const formData = new FormData();
+  formData.append('upload', file);
+  return http.post('/customer/uploadMedia', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
 };

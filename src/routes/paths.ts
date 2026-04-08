@@ -20,7 +20,7 @@ export const paths = {
   },
   // ORDERS (订单管理)
   orders: {
-    root: '/order',
+    root: '/orders',
     paymentLists: '/orders/payment-lists',
     receiveLists: '/orders/receive-lists',
     transactionSummary: '/orders/transaction-summary',

@@ -1,17 +1,17 @@
 import { CONFIG } from 'src/global-config';
 
-import { RechargeWithdrawView } from 'src/sections/fund/recharge-withdraw';
+import { FundsDetailView } from 'src/sections/fund/funds-detail';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `充值提现管理 - ${CONFIG.appName}` };
+const metadata = { title: `资金明细 - ${CONFIG.appName}` };
 
 export default function Page() {
   return (
     <>
       <title>{metadata.title}</title>
 
-      <RechargeWithdrawView />
+      <FundsDetailView />
     </>
   );
 }

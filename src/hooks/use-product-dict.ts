@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import { useCountryStore } from 'src/stores';
+import { useAuthStore } from 'src/stores';
 import { getProductDict } from 'src/api/common';
 
 type IProductType = 'payinChannel' | 'payoutChannel';
@@ -12,11 +12,12 @@ type IProductType = 'payinChannel' | 'payoutChannel';
 // };
 
 export function useProductDictList(type: IProductType) {
-  const { selectedCountry } = useCountryStore();
+  const { userInfo } = useAuthStore();
 
-  const key = selectedCountry ? ['dict', 'product', selectedCountry.code] : null;
+  // const key = selectedCountry ? ['dict', 'product', selectedCountry.code] : null;
+  const key = ['dict', 'product', userInfo?.countryCode];
 
-  const { data } = useSWR(key, () => getProductDict(), {
+  const { data } = useSWR(key, () => getProductDict(userInfo?.countryCode || ''), {
     revalidateOnFocus: false,
   });
 

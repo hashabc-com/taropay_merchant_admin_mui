@@ -48,6 +48,8 @@ export type NavItemOptionsProps = {
 export type NavItemDataProps = Pick<NavItemStateProps, 'disabled'> & {
   path: string;
   title: string;
+  /** Maps to backend resource id for permission matching & active-state detection */
+  menuId?: number;
   icon?: string | React.ReactNode;
   info?: string[] | React.ReactNode;
   caption?: string;

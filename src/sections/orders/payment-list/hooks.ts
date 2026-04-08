@@ -39,9 +39,9 @@ export const PAYMENT_STATUS_MAP: Record<
   string,
   { label: string; color: 'success' | 'info' | 'error' }
 > = {
-  '0': { label: '付款成功', color: 'success' },
-  '1': { label: '待付款', color: 'info' },
-  '2': { label: '付款失败', color: 'error' },
+  付款成功: { label: '付款成功', color: 'success' },
+  待付款: { label: '待付款', color: 'info' },
+  付款失败: { label: '付款失败', color: 'error' },
 };
 
 // ----------------------------------------------------------------------

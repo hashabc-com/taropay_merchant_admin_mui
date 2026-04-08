@@ -61,9 +61,9 @@ export const ORDER_STATUS_MAP: Record<
   string,
   { label: string; color: 'success' | 'info' | 'error' | 'default' | 'warning' }
 > = {
-  '0': { label: '支付成功', color: 'success' },
-  '1': { label: '待支付', color: 'info' },
-  '2': { label: '支付失败', color: 'error' },
-  '3': { label: '已过期', color: 'default' },
-  '4': { label: '部分支付', color: 'warning' },
+  支付成功: { label: '支付成功', color: 'success' },
+  待支付: { label: '待支付', color: 'info' },
+  支付失败: { label: '支付失败', color: 'error' },
+  已过期: { label: '已过期', color: 'default' },
+  部分支付: { label: '部分支付', color: 'warning' },
 };

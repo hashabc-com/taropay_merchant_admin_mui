@@ -12,9 +12,10 @@ export const getCountryList = () =>
 export const getMerchantList = () =>
   http.get<ResponseData<Merchant[]>>('/customer/user/v1/getAllUserList');
 
-export const getProductDict = () =>
+export const getProductDict = (country: string) =>
   http.get<{ payinChannel: string[]; payoutChannel: string[] }>(
-    '/customer/user/v1/getChannelTypeList'
+    '/customer/user/v1/getChannelTypeList',
+    { country }
   );
 
 export const payOutNotify = (data: { transId: string; status: number }) =>

@@ -1,4 +1,4 @@
-import type { SettlementListParams } from 'src/api/fund';
+import type { FundChangesParams } from 'src/api/fund';
 
 import useSWR from 'swr';
 import { useMemo } from 'react';
@@ -7,7 +7,7 @@ import { useListSWRKey } from 'src/hooks/use-list-swr-key';
 import { useConvertAmount } from 'src/hooks/use-convert-amount';
 import { useSearchParamsObject } from 'src/hooks/use-list-search';
 
-import { getSettlementList } from 'src/api/fund';
+import { getFundChanges } from 'src/api/fund';
 
 // ----------------------------------------------------------------------
 
@@ -35,11 +35,11 @@ export const AUDIT_STATUS_MAP: Record<
 export const FIELD_KEYS = ['status', 'type', 'startTime', 'endTime'] as const;
 
 export function useSettlementList() {
-  const params = useSearchParamsObject(FIELD_KEYS) as SettlementListParams;
+  const params = useSearchParamsObject(FIELD_KEYS) as FundChangesParams;
   const convertAmount = useConvertAmount();
   const key = useListSWRKey('fund', 'settlement-list', params);
 
-  const { data, isLoading, mutate } = useSWR(key, () => getSettlementList(params), {
+  const { data, isLoading, mutate } = useSWR(key, () => getFundChanges(params), {
     revalidateOnFocus: false,
     keepPreviousData: true,
   });

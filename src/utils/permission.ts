@@ -54,6 +54,14 @@ export function filterNavByPermission(
     .filter((group) => group.items.length > 0);
 }
 
+/**
+ * Check if a menu item is permitted by matching menuId against resource id.
+ */
+function hasMenuPermission(menuId: number, resourceList?: IResource[]): boolean {
+  if (!resourceList?.length) return false;
+  return resourceList.some((r) => r.id === menuId);
+}
+
 function filterNavItems(items: NavItemDataProps[], resourceList?: IResource[]): NavItemDataProps[] {
   return items
     .map((item) => {
@@ -71,12 +79,12 @@ function filterNavItems(items: NavItemDataProps[], resourceList?: IResource[]): 
         return item;
       }
 
-      // Leaf item — check permission by path
-      if (item.path) {
-        return hasRoutePermission(item.path, resourceList) ? item : null;
+      // Match by menuId against backend resource id
+      if (item.menuId != null) {
+        return hasMenuPermission(item.menuId, resourceList) ? item : null;
       }
 
-      // Items without path (unlikely) — keep
+      // Items without menuId — keep (backwards compatibility)
       return item;
     })
     .filter((item): item is NavItemDataProps => item !== null);
