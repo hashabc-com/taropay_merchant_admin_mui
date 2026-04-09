@@ -6,9 +6,9 @@ import { listClasses } from '@mui/material/List';
 
 const MuiPopover: Components<Theme>['MuiPopover'] = {
   // ▼▼▼▼▼▼▼▼ ⚙️ PROPS ▼▼▼▼▼▼▼▼
-  defaultProps: {
-    disableRestoreFocus: true,
-  },
+  // defaultProps: {
+  //   disableRestoreFocus: true,
+  // },
   // ▼▼▼▼▼▼▼▼ 🎨 STYLE ▼▼▼▼▼▼▼▼
   styleOverrides: {
     paper: ({ theme }) => ({

@@ -106,11 +106,17 @@ export function useListSearch<K extends string>(fieldKeys: readonly K[]) {
 
   /** Clear all fields and URL (keep only pageNum + pageSize) */
   const handleReset = useCallback(() => {
+    // Directly reset local values in case URL hasn't changed (user never searched)
+    const empty = {} as Record<K, string>;
+    for (const key of keysRef.current) {
+      empty[key] = '';
+    }
+    setValues(empty);
+
     const params = new URLSearchParams();
     params.set('pageNum', '1');
     params.set('pageSize', searchParams.get('pageSize') || '10');
     setSearchParams(params);
-    // Note: setSearchParams triggers re-render → useEffect syncs local values
   }, [searchParams, setSearchParams]);
 
   /** Trigger search on Enter key */
