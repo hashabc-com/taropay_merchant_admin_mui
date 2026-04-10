@@ -23,6 +23,9 @@ import { useAuthStore } from 'src/stores/auth-store';
 import { useLanguage } from 'src/context/language-provider';
 
 import { Iconify } from 'src/components/iconify';
+import { UpdatePasswordDialog } from 'src/components/update-password-dialog';
+import { KeyPairGeneratorDialog } from 'src/components/key-pair-generator-dialog';
+import { UpdatePayPasswordDialog } from 'src/components/update-pay-password-dialog';
 import { varTap, varHover, AnimateBorder, transitionTap } from 'src/components/animate';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -40,6 +43,10 @@ export function NavUpgrade({ sx, ...other }: BoxProps) {
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
+
+  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [payPasswordOpen, setPayPasswordOpen] = useState(false);
+  const [keyPairOpen, setKeyPairOpen] = useState(false);
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -59,6 +66,21 @@ export function NavUpgrade({ sx, ...other }: BoxProps) {
       console.error(error);
     }
   }, [checkUserSession, router]);
+
+  const handleOpenPassword = () => {
+    handleClose();
+    setPasswordOpen(true);
+  };
+
+  const handleOpenPayPassword = () => {
+    handleClose();
+    setPayPasswordOpen(true);
+  };
+
+  const handleOpenKeyPair = () => {
+    handleClose();
+    setKeyPairOpen(true);
+  };
 
   const handleOpenApiDocs = () => {
     handleClose();
@@ -121,6 +143,38 @@ export function NavUpgrade({ sx, ...other }: BoxProps) {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <MenuList sx={{ py: 1 }}>
+          <MenuItem onClick={handleOpenPassword} sx={{ borderRadius: 1 }}>
+            <ListItemIcon sx={{ mr: 0 }}>
+              <Iconify icon="solar:lock-password-bold-duotone" />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('password.updatePassword')}
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </MenuItem>
+          <MenuItem onClick={handleOpenPayPassword} sx={{ borderRadius: 1 }}>
+            <ListItemIcon sx={{ mr: 0 }}>
+              <Iconify icon="solar:wallet-bold-duotone" />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('password.updatePayPassword')}
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </MenuItem>
+        </MenuList>
+
+        <Divider sx={{ borderStyle: 'dashed' }} />
+
+        <MenuList sx={{ py: 1 }}>
+          <MenuItem onClick={handleOpenKeyPair} sx={{ borderRadius: 1 }}>
+            <ListItemIcon sx={{ mr: 0 }}>
+              <Iconify icon="solar:key-bold-duotone" />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('keyPair.title')}
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </MenuItem>
           <MenuItem onClick={handleOpenApiDocs} sx={{ borderRadius: 1 }}>
             <ListItemIcon sx={{ mr: 0 }}>
               <Iconify icon="solar:document-bold-duotone" />
@@ -146,6 +200,14 @@ export function NavUpgrade({ sx, ...other }: BoxProps) {
           </MenuItem>
         </MenuList>
       </Popover>
+
+      <UpdatePasswordDialog open={passwordOpen} onClose={() => setPasswordOpen(false)} />
+      <UpdatePayPasswordDialog open={payPasswordOpen} onClose={() => setPayPasswordOpen(false)} />
+      <KeyPairGeneratorDialog
+        open={keyPairOpen}
+        onClose={() => setKeyPairOpen(false)}
+        navigateToSecretManagement
+      />
     </Box>
   );
 }
