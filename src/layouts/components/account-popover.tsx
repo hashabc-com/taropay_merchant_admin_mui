@@ -1,6 +1,6 @@
 import type { IconButtonProps } from '@mui/material/IconButton';
 
-import { useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { usePopover } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
@@ -19,6 +19,9 @@ import { useLanguage } from 'src/context/language-provider';
 
 import { Iconify } from 'src/components/iconify';
 import { CustomPopover } from 'src/components/custom-popover';
+import { UpdatePasswordDialog } from 'src/components/update-password-dialog';
+import { KeyPairGeneratorDialog } from 'src/components/key-pair-generator-dialog';
+import { UpdatePayPasswordDialog } from 'src/components/update-pay-password-dialog';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { signOut } from 'src/auth/context/jwt/action';
@@ -39,9 +42,28 @@ export function AccountPopover({ sx, ...other }: AccountPopoverProps) {
 
   const displayName = userInfo?.name ?? 'User';
 
+  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [payPasswordOpen, setPayPasswordOpen] = useState(false);
+  const [keyPairOpen, setKeyPairOpen] = useState(false);
+
   const handleOpenApiDocs = () => {
     onClose();
     window.open('https://docs.taropay.com/guide/overview', '_blank', 'noopener,noreferrer');
+  };
+
+  const handleOpenPassword = () => {
+    onClose();
+    setPasswordOpen(true);
+  };
+
+  const handleOpenPayPassword = () => {
+    onClose();
+    setPayPasswordOpen(true);
+  };
+
+  const handleOpenKeyPair = () => {
+    onClose();
+    setKeyPairOpen(true);
   };
 
   const handleLogout = useCallback(async () => {
@@ -80,6 +102,38 @@ export function AccountPopover({ sx, ...other }: AccountPopoverProps) {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <MenuList sx={{ py: 1 }}>
+          <MenuItem onClick={handleOpenPassword} sx={{ borderRadius: 1, gap: '0 !important' }}>
+            <ListItemIcon sx={{ mr: 0 }}>
+              <Iconify icon="solar:lock-password-bold-duotone" />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('password.updatePassword')}
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </MenuItem>
+          <MenuItem onClick={handleOpenPayPassword} sx={{ borderRadius: 1, gap: '0 !important' }}>
+            <ListItemIcon sx={{ mr: 0 }}>
+              <Iconify icon="solar:wallet-bold-duotone" />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('password.updatePayPassword')}
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </MenuItem>
+        </MenuList>
+
+        <Divider sx={{ borderStyle: 'dashed' }} />
+
+        <MenuList sx={{ py: 1 }}>
+          <MenuItem onClick={handleOpenKeyPair} sx={{ borderRadius: 1, gap: '0 !important' }}>
+            <ListItemIcon sx={{ mr: 0 }}>
+              <Iconify icon="solar:key-bold-duotone" />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('keyPair.title')}
+              primaryTypographyProps={{ variant: 'body2' }}
+            />
+          </MenuItem>
           <MenuItem onClick={handleOpenApiDocs} sx={{ borderRadius: 1, gap: '0 !important' }}>
             <ListItemIcon sx={{ mr: 0 }}>
               <Iconify icon="solar:document-bold-duotone" />
@@ -108,6 +162,14 @@ export function AccountPopover({ sx, ...other }: AccountPopoverProps) {
           </MenuItem>
         </MenuList>
       </CustomPopover>
+
+      <UpdatePasswordDialog open={passwordOpen} onClose={() => setPasswordOpen(false)} />
+      <UpdatePayPasswordDialog open={payPasswordOpen} onClose={() => setPayPasswordOpen(false)} />
+      <KeyPairGeneratorDialog
+        open={keyPairOpen}
+        onClose={() => setKeyPairOpen(false)}
+        navigateToSecretManagement
+      />
     </>
   );
 }

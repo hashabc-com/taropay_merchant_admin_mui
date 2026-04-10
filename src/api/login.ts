@@ -18,21 +18,11 @@ export interface LoginForm {
   type: LoginType;
 }
 
-export interface UserInfo {
-  account: string;
-  createTime: string;
-  disabledStatus: number;
-  email: string;
-  gauthKey: string;
-  id: number;
-  lastLoginTime: string;
-  mobile: string;
-  password: string;
-  roleIds: string;
-  salt: string;
-  updateTime: string;
-  userName: string;
-  userType: number;
+export interface GoogleAuthInfo {
+  customerName: string;
+  type: number;
+  gauthKey?: string;
+  secretKey?: string;
 }
 
 // ----------------------------------------------------------------------
@@ -42,8 +32,8 @@ export const loginApi = (data: LoginForm) => http.post('/customer/login/form', d
 export const getVerifyCode = () =>
   http.post('/customer/googleVerify/v2/getPictureVerificationCode', {});
 
-export const getKey = (data: Partial<UserInfo>) =>
+export const getKey = (data: Partial<GoogleAuthInfo>) =>
   http.post('/customer/googleVerify/v1/getKey', data);
 
-export const bindKey = (data: Partial<UserInfo>) =>
+export const bindKey = (data: Partial<GoogleAuthInfo>) =>
   http.post('/customer/googleVerify/v1/bindKey', data);

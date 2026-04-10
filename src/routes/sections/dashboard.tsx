@@ -30,6 +30,9 @@ const FundRechargeWithdraw = lazy(() => import('src/pages/fund/recharge-withdraw
 const ExportManagement = lazy(() => import('src/pages/system/export-management'));
 const SubAccountManagement = lazy(() => import('src/pages/system/sub-account-management'));
 
+// Secret
+const SecretManagement = lazy(() => import('src/pages/secret/management'));
+
 // ----------------------------------------------------------------------
 
 function SuspenseOutlet() {
@@ -69,6 +72,7 @@ export const dashboardRoutes: RouteObject[] = [
       },
       { path: 'export/management', element: <ExportManagement /> },
       { path: 'sub-account-management', element: <SubAccountManagement /> },
+      { path: 'secret/management', element: <SecretManagement /> },
     ],
   },
 ];

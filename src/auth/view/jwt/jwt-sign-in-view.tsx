@@ -19,13 +19,14 @@ import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 import DialogContentText from '@mui/material/DialogContentText';
 
+import { useLanguage } from 'src/context/language-provider';
 import {
   getKey,
   bindKey,
   loginApi,
   getVerifyCode,
-  type UserInfo,
   type LoginForm,
+  type GoogleAuthInfo,
 } from 'src/api/login';
 
 import { Iconify } from 'src/components/iconify';
@@ -35,18 +36,17 @@ import { FormHead } from '../../components/form-head';
 
 // ----------------------------------------------------------------------
 
-const SignInSchema = z.object({
-  username: z.string().min(1, { message: '请输入用户名' }),
-  password: z.string().min(1, { message: '请输入密码' }),
-  validatecode: z.string().min(1, { message: '请输入验证码' }),
-});
-
-type SignInSchemaType = z.infer<typeof SignInSchema>;
-
-// ----------------------------------------------------------------------
-
 export function JwtSignInView() {
+  const { t } = useLanguage();
   const showPassword = useBoolean();
+
+  const SignInSchema = z.object({
+    username: z.string().min(1, { message: t('signIn.enterUsername') }),
+    password: z.string().min(1, { message: t('signIn.enterPassword') }),
+    validatecode: z.string().min(1, { message: t('signIn.enterVerifyCode') }),
+  });
+
+  type SignInSchemaType = z.infer<typeof SignInSchema>;
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [verifyCode, setVerifyCode] = useState<{ base64ImgStr: string; key: string }>({
@@ -59,7 +59,7 @@ export function JwtSignInView() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [googleMode, setGoogleMode] = useState<'bind' | 'verify'>('verify');
   const [googleCode, setGoogleCode] = useState('');
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [googleAuthInfo, setGoogleAuthInfo] = useState<GoogleAuthInfo | null>(null);
   const [loginParams, setLoginParams] = useState<LoginForm | null>(null);
   const googleInputRef = useRef<HTMLInputElement>(null);
 
@@ -81,71 +81,47 @@ export function JwtSignInView() {
       resetField('validatecode');
       if (res.result) setVerifyCode(res.result);
     } catch {
-      toast.error('获取验证码失败');
+      toast.error(t('signIn.getVerifyCodeFailed'));
     }
-  }, [resetField]);
+  }, [resetField, t]);
 
   useEffect(() => {
     fetchVerifyCode();
   }, [fetchVerifyCode]);
 
   // ---------- google auth bind ----------
-  const handleBindGoogleAuth = async (userName: string) => {
+  const handleBindGoogleAuth = async (customerName: string) => {
     try {
-      const params: Partial<UserInfo> = {
-        userName,
-        account: '',
-        createTime: '',
-        disabledStatus: 0,
-        email: '',
-        gauthKey: '',
-        id: 0,
-        lastLoginTime: '',
-        mobile: '',
-        password: '',
-        roleIds: '',
-        salt: '',
-        updateTime: '',
-        userType: 0,
-      };
-      const keyRes = await getKey(params);
-      if (keyRes.code === '200') {
-        setUserInfo(keyRes.result);
+      const keyRes = await getKey({ customerName, type: 0 });
+      if (keyRes.code == '1') {
+        setGoogleAuthInfo(keyRes.result);
         setGoogleMode('bind');
         setGoogleOpen(true);
         setTimeout(() => googleInputRef.current?.focus(), 200);
       } else {
-        toast.error(keyRes.message || '获取密钥失败');
+        toast.error(keyRes.message || t('signIn.getSecretKeyFailed'));
       }
     } catch {
-      toast.error('获取密钥失败');
+      toast.error(t('signIn.getSecretKeyFailed'));
     }
   };
 
   const handleBindKey = async (code: string) => {
-    if (!userInfo) return;
+    if (!googleAuthInfo) return;
     try {
       const res = await bindKey({
-        gauthKey: userInfo.gauthKey,
-        userName: userInfo.userName,
-        account: '',
-        createTime: '',
-        disabledStatus: 0,
-        email: '',
-        id: 0,
-        lastLoginTime: '',
-        mobile: '',
-        password: '',
-        userType: 0,
+        gauthKey: googleAuthInfo.gauthKey,
+        customerName: googleAuthInfo.customerName,
+        type: 0,
       });
-      if (res.code === '200') {
+      if (res.code == '1') {
         setGoogleOpen(false);
         await handleFinalLogin(code);
       } else {
-        toast.error(res.message || '绑定失败');
+        toast.error(res.message || t('signIn.bindingFailed'));
       }
     } catch {
-      toast.error('绑定失败');
+      toast.error(t('signIn.bindingFailed'));
     }
   };
 
@@ -155,7 +131,7 @@ export function JwtSignInView() {
     try {
       const res = await loginApi({ ...loginParams, type: 'confirm', gauthkey: code });
       if (res.code === '200' && res.result) {
-        toast.success('登录成功');
+        toast.success(t('signIn.loginSuccess'));
 
         // 1. Store token & userInfo to localStorage (HTTP interceptor reads from here)
         //    The userInfo includes resourceList (permissions) from the backend.
@@ -165,9 +141,6 @@ export function JwtSignInView() {
         // 2. Calculate target route
         const searchParams = new URLSearchParams(window.location.search);
         const returnTo = searchParams.get('returnTo');
-        // Use returnTo if present, otherwise always go to the dashboard.
-        // We don't use getFirstAuthorizedRoute here because the backend
-        // resourceList URLs may differ from the frontend route paths.
         const target = returnTo || '/';
 
         // 3. Navigate directly — do NOT call authLogin() to avoid triggering
@@ -181,7 +154,7 @@ export function JwtSignInView() {
     } catch {
       setGoogleOpen(false);
       fetchVerifyCode();
-      toast.error('登录失败');
+      toast.error(t('signIn.loginFailed'));
     }
   };
 
@@ -216,9 +189,11 @@ export function JwtSignInView() {
       const res = await loginApi(params);
 
       if (res.code === '202') {
+        // 未绑定谷歌验证码，需要绑定
         setLoginParams(params);
         await handleBindGoogleAuth(res.message);
       } else if (res.code === '203') {
+        // 已绑定谷歌验证码，需要输入验证码
         setLoginParams(params);
         setGoogleMode('verify');
         setGoogleOpen(true);
@@ -229,7 +204,7 @@ export function JwtSignInView() {
       }
     } catch (error: any) {
       fetchVerifyCode();
-      setErrorMessage(error?.message || '登录失败');
+      setErrorMessage(error?.message || t('signIn.loginFailed'));
     }
   });
 
@@ -238,15 +213,15 @@ export function JwtSignInView() {
     <Box sx={{ gap: 3, display: 'flex', flexDirection: 'column' }}>
       <Field.Text
         name="username"
-        label="用户名"
-        placeholder="请输入用户名"
+        label={t('signIn.username')}
+        placeholder={t('signIn.enterUsername')}
         slotProps={{ inputLabel: { shrink: true } }}
       />
 
       <Field.Text
         name="password"
-        label="密码"
-        placeholder="请输入密码"
+        label={t('signIn.password')}
+        placeholder={t('signIn.enterPassword')}
         type={showPassword.value ? 'text' : 'password'}
         slotProps={{
           inputLabel: { shrink: true },
@@ -265,8 +240,8 @@ export function JwtSignInView() {
       <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
         <Field.Text
           name="validatecode"
-          label="验证码"
-          placeholder="请输入验证码"
+          label={t('signIn.verifyCode')}
+          placeholder={t('signIn.enterVerifyCode')}
           slotProps={{ inputLabel: { shrink: true } }}
           sx={{ flex: 1 }}
         />
@@ -306,9 +281,9 @@ export function JwtSignInView() {
         type="submit"
         variant="contained"
         loading={isSubmitting}
-        loadingIndicator="登录中..."
+        loadingIndicator={t('signIn.loggingIn')}
       >
-        登录
+        {t('signIn.signInButton')}
       </Button>
     </Box>
   );
@@ -316,8 +291,8 @@ export function JwtSignInView() {
   return (
     <>
       <FormHead
-        title="TaroPay Admin"
-        description="请输入账号密码登录系统"
+        title={t('auth.brandTitle')}
+        description={t('signIn.description')}
         sx={{ textAlign: { xs: 'center', md: 'left' } }}
       />
 
@@ -344,19 +319,23 @@ export function JwtSignInView() {
         fullWidth
       >
         <DialogTitle>
-          {googleMode === 'bind' ? '绑定 Google 身份验证器' : '输入 Google 验证码'}
+          {googleMode === 'bind' ? t('signIn.bindGoogleAuth') : t('signIn.enterGoogleAuthCode')}
         </DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ mb: 2 }}>
             {googleMode === 'bind'
-              ? '请使用 Google 身份验证器扫描二维码并输入6位验证码'
-              : '请输入 Google 身份验证器中的6位验证码'}
+              ? t('signIn.bindGoogleAuthDesc')
+              : t('signIn.enterGoogleCodeDesc')}
           </DialogContentText>
 
-          {googleMode === 'bind' && userInfo?.roleIds && (
+          {googleMode === 'bind' && googleAuthInfo?.secretKey && (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
               <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2 }}>
-                <QRCode value={window.atob(userInfo.roleIds)} size={200} fgColor="#8b1538" />
+                <QRCode
+                  value={window.atob(googleAuthInfo.secretKey)}
+                  size={250}
+                  fgColor="#8b1538"
+                />
               </Box>
             </Box>
           )}
@@ -364,7 +343,7 @@ export function JwtSignInView() {
           <TextField
             inputRef={googleInputRef}
             fullWidth
-            label="验证码"
+            label={t('signIn.googleAuthCode')}
             value={googleCode}
             onChange={(e) => {
               const v = e.target.value.replace(/\D/g, '').slice(0, 6);
@@ -393,15 +372,15 @@ export function JwtSignInView() {
             }}
             disabled={googleLoading}
           >
-            取消
+            {t('common.cancel')}
           </Button>
           <Button
             variant="contained"
             onClick={handleGoogleConfirm}
             disabled={googleCode.length !== 6 || googleLoading}
-            startIcon={googleLoading ? <CircularProgress size={18} /> : undefined}
+            startIcon={googleLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
           >
-            {googleLoading ? '验证中...' : '确认'}
+            {googleLoading ? t('common.submitting') : t('common.confirm')}
           </Button>
         </DialogActions>
       </Dialog>

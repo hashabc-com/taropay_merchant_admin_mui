@@ -2,9 +2,9 @@ import type { Breakpoint } from '@mui/material/styles';
 import type { NavSectionProps } from 'src/components/nav-section';
 import type { MainSectionProps, HeaderSectionProps, LayoutSectionProps } from '../core';
 
-import { useMemo } from 'react';
 import { merge } from 'es-toolkit';
 import { useBoolean } from 'minimal-shared/hooks';
+import { useMemo, useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -20,6 +20,7 @@ import { Logo } from 'src/components/logo';
 import { CountryTime } from 'src/components/country-time';
 import { useSettingsContext } from 'src/components/settings';
 import { CurrencySelector } from 'src/components/country-merchant-selector';
+import { KeyPairGeneratorDialog } from 'src/components/key-pair-generator-dialog';
 
 import { NavMobile } from './nav-mobile';
 import { VerticalDivider } from './content';
@@ -65,13 +66,22 @@ export function DashboardLayout({
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 
+  // First-login: show key pair generator dialog
+  const [showKeyPairDialog, setShowKeyPairDialog] = useState(false);
+  useEffect(() => {
+    const hasShownDialog = localStorage.getItem('_keyPairDialogShown');
+    if (!hasShownDialog) {
+      setShowKeyPairDialog(true);
+    }
+  }, []);
+
   // Subscribe to `userInfo` so the component re-renders when resourceList changes
   const resourceList = useAuthStore((s) => s.userInfo?.resourceList);
   const dashboardNavData = useNavData();
   const rawNavData = slotProps?.nav?.data ?? dashboardNavData;
   const navData = useMemo(
     () => filterNavByPermission(rawNavData, resourceList),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [rawNavData, resourceList]
   );
 
@@ -209,39 +219,48 @@ export function DashboardLayout({
   const renderMain = () => <MainSection {...slotProps?.main}>{children}</MainSection>;
 
   return (
-    <LayoutSection
-      /** **************************************
-       * @Header
-       *************************************** */
-      headerSection={renderHeader()}
-      /** **************************************
-       * @Sidebar
-       *************************************** */
-      sidebarSection={isNavHorizontal ? null : renderSidebar()}
-      /** **************************************
-       * @Footer
-       *************************************** */
-      footerSection={renderFooter()}
-      /** **************************************
-       * @Styles
-       *************************************** */
-      cssVars={{ ...dashboardLayoutVars(theme), ...navVars.layout, ...cssVars }}
-      sx={[
-        {
-          [`& .${layoutClasses.sidebarContainer}`]: {
-            [theme.breakpoints.up(layoutQuery)]: {
-              pl: isNavMini ? 'var(--layout-nav-mini-width)' : 'var(--layout-nav-vertical-width)',
-              transition: theme.transitions.create(['padding-left'], {
-                easing: 'var(--layout-transition-easing)',
-                duration: 'var(--layout-transition-duration)',
-              }),
+    <>
+      <LayoutSection
+        /** **************************************
+         * @Header
+         *************************************** */
+        headerSection={renderHeader()}
+        /** **************************************
+         * @Sidebar
+         *************************************** */
+        sidebarSection={isNavHorizontal ? null : renderSidebar()}
+        /** **************************************
+         * @Footer
+         *************************************** */
+        footerSection={renderFooter()}
+        /** **************************************
+         * @Styles
+         *************************************** */
+        cssVars={{ ...dashboardLayoutVars(theme), ...navVars.layout, ...cssVars }}
+        sx={[
+          {
+            [`& .${layoutClasses.sidebarContainer}`]: {
+              [theme.breakpoints.up(layoutQuery)]: {
+                pl: isNavMini ? 'var(--layout-nav-mini-width)' : 'var(--layout-nav-vertical-width)',
+                transition: theme.transitions.create(['padding-left'], {
+                  easing: 'var(--layout-transition-easing)',
+                  duration: 'var(--layout-transition-duration)',
+                }),
+              },
             },
           },
-        },
-        ...(Array.isArray(sx) ? sx : [sx]),
-      ]}
-    >
-      {renderMain()}
-    </LayoutSection>
+          ...(Array.isArray(sx) ? sx : [sx]),
+        ]}
+      >
+        {renderMain()}
+      </LayoutSection>
+
+      <KeyPairGeneratorDialog
+        open={showKeyPairDialog}
+        onClose={() => setShowKeyPairDialog(false)}
+        navigateToSecretManagement
+        isFirstTime
+      />
+    </>
   );
 }

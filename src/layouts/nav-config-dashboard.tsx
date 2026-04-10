@@ -97,6 +97,12 @@ export function useNavData(): NavSectionProps['data'] {
             menuId: 11,
           },
           {
+            title: t('sidebar.secretManagement'),
+            path: paths.secret.management,
+            icon: ICONS.lock,
+            menuId: 9,
+          },
+          {
             title: t('sidebar.exportManagement'),
             path: paths.exportManagement,
             icon: ICONS.folder,
