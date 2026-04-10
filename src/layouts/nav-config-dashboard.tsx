@@ -67,8 +67,8 @@ export function useNavData(): NavSectionProps['data'] {
             icon: ICONS.order,
             menuId: 2,
             children: [
-              { title: t('sidebar.paymentOrders'), path: paths.orders.paymentLists, menuId: 3 },
               { title: t('sidebar.receiveOrders'), path: paths.orders.receiveLists, menuId: 4 },
+              { title: t('sidebar.paymentOrders'), path: paths.orders.paymentLists, menuId: 3 },
               {
                 title: t('sidebar.transactionSummary'),
                 path: paths.orders.transactionSummary,
@@ -90,7 +90,12 @@ export function useNavData(): NavSectionProps['data'] {
               },
             ],
           },
-
+          {
+            title: t('sidebar.subAccountManagement'),
+            path: paths.subAccountManagement,
+            icon: ICONS.user,
+            menuId: 11,
+          },
           {
             title: t('sidebar.exportManagement'),
             path: paths.exportManagement,

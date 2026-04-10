@@ -47,11 +47,6 @@ components/   → Shared UI (hook-form/, country-merchant-selector/, etc.)
   }
   ```
 
-- **SWR key 统一使用 `useListSWRKey`**（`src/hooks/use-list-swr-key.ts`）：该 hook 内部读取 `selectedCountry.code` 和 `selectedMerchant?.appid` 并追加到 key 末尾，当 `selectedCountry` 为空时返回 `null`（跳过请求）。不要在业务 hooks 中手动导入 country-store / merchant-store 来构建 SWR key。
-- **国家切换重置 URL 参数但不导致双重请求**：`CountryMerchantSelector` 切换国家时，先**同步**执行 Zustand 更新 + `setSearchParams` 重置 URL（React 18 自动批处理为单次渲染），再异步拉取汇率。关键：所有同步状态更新必须在 `await` **之前**完成，否则 `await` 之后的更新脱离事件处理上下文，React 无法批处理，导致多次渲染和多次请求。
-  - **必须用 `startTransition` 包裹**：React Router v7 的 `setSearchParams` 内部使用 `startTransition`（低优先级），而 Zustand 的 `useSyncExternalStore` 走同步优先级。优先级不同导致 React 分两次渲染 → 两次请求。用 `startTransition` 包裹所有 Zustand + URL 更新，统一到同一优先级 → 单次渲染 → 单次请求。
-- `FIELD_KEYS` 必须在 `hooks.ts` 中导出，供 search 组件的 `useListSearch(FIELD_KEYS)` 和 SWR hook 的 `useSearchParamsObject(FIELD_KEYS)` 共用。
-
 ## State Management
 
 | Store            | Persistence                                                   | Purpose                                                        |

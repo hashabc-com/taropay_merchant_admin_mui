@@ -167,12 +167,6 @@ export function OrderListView() {
             value ? <Chip label={value} size="small" variant="outlined" /> : '-',
         },
         {
-          field: 'paymentCompany',
-          headerName: t('common.channel'),
-          minWidth: 100,
-          flex: 1,
-        },
-        {
           field: 'amount',
           headerName: t('orders.receiveOrders.orderAmount'),
           minWidth: 120,

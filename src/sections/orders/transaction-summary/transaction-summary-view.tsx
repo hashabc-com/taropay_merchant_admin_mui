@@ -61,7 +61,7 @@ export function TransactionSummaryView() {
     async (exportParams: { startTime?: string; endTime?: string }) => {
       try {
         const res = await prepareExportSummary(exportParams);
-        if (res.code == 200) {
+        if (res.code == 1) {
           toast.success(t('common.exportTaskCreated'));
         } else {
           toast.error(res.message || t('common.exportFailed'));

@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -7,10 +9,12 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { useListSearch } from 'src/hooks/use-list-search';
 import { useProductDictList } from 'src/hooks/use-product-dict';
 
+import { prepareExportPayment } from 'src/api/order';
 import { useLanguage } from 'src/context/language-provider';
 
 import { Iconify } from 'src/components/iconify';
@@ -25,6 +29,26 @@ export function PaymentListSearch() {
   const { values, setField, hasFilters, handleSearch, handleReset, handleKeyDown } =
     useListSearch(FIELD_KEYS);
   const productDict = useProductDictList('payoutChannel');
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const res = await prepareExportPayment({
+        startTime: values.startTime || '',
+        endTime: values.endTime || '',
+      });
+      if (res.code == 1) {
+        toast.success(t('common.exportTaskCreated'));
+      } else {
+        toast.error(res.message || t('common.exportFailed'));
+      }
+    } catch {
+      toast.error(t('common.exportFailed'));
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1.5, mb: 3 }}>
@@ -139,6 +163,22 @@ export function PaymentListSearch() {
           {t('common.reset')}
         </Button>
       )}
+
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={handleExport}
+        disabled={exporting}
+        startIcon={
+          exporting ? (
+            <CircularProgress size={16} color="inherit" />
+          ) : (
+            <Iconify icon="solar:download-minimalistic-bold" />
+          )
+        }
+      >
+        {exporting ? t('common.exporting') : t('common.export')}
+      </Button>
     </Box>
   );
 }

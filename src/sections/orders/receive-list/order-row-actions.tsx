@@ -9,6 +9,8 @@ import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
+import isProduction from 'src/utils/isProduction';
+
 import { useLanguage } from 'src/context/language-provider';
 
 import { Iconify } from 'src/components/iconify';
@@ -41,45 +43,35 @@ export function OrderRowActions({ row, onNotify, onUpdateStatus, onViewDetail }:
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {row.status !== '0' && (
-          <MenuItem
-            onClick={() => {
-              onUpdateStatus(row);
-              setAnchorEl(null);
-            }}
-          >
-            <ListItemIcon>
-              <Iconify icon="solar:refresh-bold" />
-            </ListItemIcon>
-            <ListItemText>{t('orders.paymentOrders.updateStatus')}</ListItemText>
-          </MenuItem>
+        {isProduction ? null : (
+          <>
+            <MenuItem
+              onClick={() => {
+                onNotify(row, 0);
+                setAnchorEl(null);
+              }}
+            >
+              <ListItemIcon>
+                <Iconify icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
+              </ListItemIcon>
+              <ListItemText>{t('orders.paymentOrders.successNotification')}</ListItemText>
+            </MenuItem>
+
+            <MenuItem
+              onClick={() => {
+                onNotify(row, 2);
+                setAnchorEl(null);
+              }}
+            >
+              <ListItemIcon>
+                <Iconify icon="solar:close-circle-bold" sx={{ color: 'error.main' }} />
+              </ListItemIcon>
+              <ListItemText>{t('orders.paymentOrders.failureNotification')}</ListItemText>
+            </MenuItem>
+
+            <Divider />
+          </>
         )}
-
-        <MenuItem
-          onClick={() => {
-            onNotify(row, 0);
-            setAnchorEl(null);
-          }}
-        >
-          <ListItemIcon>
-            <Iconify icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
-          </ListItemIcon>
-          <ListItemText>{t('orders.paymentOrders.successNotification')}</ListItemText>
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            onNotify(row, 2);
-            setAnchorEl(null);
-          }}
-        >
-          <ListItemIcon>
-            <Iconify icon="solar:close-circle-bold" sx={{ color: 'error.main' }} />
-          </ListItemIcon>
-          <ListItemText>{t('orders.paymentOrders.failureNotification')}</ListItemText>
-        </MenuItem>
-
-        <Divider />
 
         <MenuItem
           onClick={() => {

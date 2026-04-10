@@ -28,6 +28,7 @@ const FundRechargeWithdraw = lazy(() => import('src/pages/fund/recharge-withdraw
 
 // Top-level pages
 const ExportManagement = lazy(() => import('src/pages/system/export-management'));
+const SubAccountManagement = lazy(() => import('src/pages/system/sub-account-management'));
 
 // ----------------------------------------------------------------------
 
@@ -67,6 +68,7 @@ export const dashboardRoutes: RouteObject[] = [
         ],
       },
       { path: 'export/management', element: <ExportManagement /> },
+      { path: 'sub-account-management', element: <SubAccountManagement /> },
     ],
   },
 ];
