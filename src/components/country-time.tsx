@@ -54,6 +54,8 @@ export function CountryTime() {
     return () => clearInterval(timer);
   }, []);
 
+  console.log('CountryTime-code==========>', countryCode);
+
   if (!countryCode) return null;
 
   const timezone = COUNTRY_TIMEZONE[countryCode];
