@@ -1,7 +1,7 @@
 import type { RechargeWithdrawRecord } from './hooks';
 
 import { useSearchParams } from 'react-router';
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -28,6 +28,22 @@ export function RechargeWithdrawView() {
   const { t } = useLanguage();
   const [rechargeOpen, setRechargeOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+
+  // Open dialog when navigated with ?action=recharge|withdraw (e.g. from dashboard)
+  useEffect(() => {
+    const action = searchParams.get('action');
+    if (action === 'recharge') {
+      setRechargeOpen(true);
+    } else if (action === 'withdraw') {
+      setWithdrawOpen(true);
+    }
+    // Clean up the action param so it doesn't re-trigger on subsequent renders
+    if (action) {
+      const p = new URLSearchParams(searchParams);
+      p.delete('action');
+      setSearchParams(p, { replace: true });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const paginationModel: GridPaginationModel = useMemo(() => {
     const pageNum = Number(searchParams.get('pageNum')) || 1;

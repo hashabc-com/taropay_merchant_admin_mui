@@ -92,6 +92,8 @@ export function useListSearch<K extends string>(fieldKeys: readonly K[]) {
   const handleSearch = useCallback(() => {
     const params = new URLSearchParams(searchParams);
     params.set('pageNum', '1');
+    // Always update _t so the SWR key changes even when filters are unchanged
+    params.set('_t', Date.now().toString());
 
     Object.entries(values).forEach(([key, value]) => {
       if (value) {

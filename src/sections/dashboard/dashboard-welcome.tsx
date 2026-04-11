@@ -91,11 +91,20 @@ export function DashboardWelcome() {
           <Button
             variant="contained"
             color="warning"
-            startIcon={<Iconify icon="solar:card-transfer-bold" />}
-            onClick={() => router.push(paths.fund.rechargeWithdraw)}
+            startIcon={<Iconify icon="solar:upload-bold" />}
+            onClick={() => router.push(`${paths.fund.rechargeWithdraw}?action=recharge`)}
             sx={{ fontWeight: 600 }}
           >
-            {t('dashboard.goToRechargeWithdraw')}
+            {t('dashboard.goToRecharge')}
+          </Button>
+          <Button
+            variant="contained"
+            color="warning"
+            startIcon={<Iconify icon="solar:download-bold" />}
+            onClick={() => router.push(`${paths.fund.rechargeWithdraw}?action=withdraw`)}
+            sx={{ fontWeight: 600 }}
+          >
+            {t('dashboard.goToWithdraw')}
           </Button>
           <Button
             variant="outlined"

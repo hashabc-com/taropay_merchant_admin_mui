@@ -127,7 +127,7 @@ export function OrderListView() {
         },
         {
           field: 'referenceno',
-          headerName: `${t('common.thirdParty')}/${t('common.platform')}/${t('orders.receiveOrders.merchantOrderNo')}`,
+          headerName: `${t('common.platform')}/${t('orders.receiveOrders.merchantOrderNo')}`,
           minWidth: 300,
           flex: 1,
           align: 'left',
@@ -138,7 +138,7 @@ export function OrderListView() {
                 color: 'text.secondary',
               }}
             >
-              <span>{row.tripartiteOrder || '-'}</span>
+              {/* <span>{row.tripartiteOrder || '-'}</span> */}
               <span>{row.transId || '-'}</span>
               <span>{row.referenceno || '-'}</span>
             </Stack>

@@ -15,6 +15,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { DataGrid, type GridPaginationModel } from '@mui/x-data-grid';
 
+import isProduction from 'src/utils/isProduction';
+
 import { payInNotify } from 'src/api/common';
 import { payOutReject } from 'src/api/order';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -295,8 +297,8 @@ type PaymentRowActionsProps = {
 function PaymentRowActions({
   row,
   onNotify,
-  onUpdateStatus,
-  onReject,
+  // onUpdateStatus,
+  // onReject,
   onViewDetail,
   t,
 }: PaymentRowActionsProps) {
@@ -317,60 +319,31 @@ function PaymentRowActions({
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {row.status === '1' && (
-          <>
-            <MenuItem
-              onClick={() => {
-                onUpdateStatus(row);
-                setAnchorEl(null);
-              }}
-            >
-              <ListItemIcon>
-                <Iconify icon="solar:refresh-bold" />
-              </ListItemIcon>
-              <ListItemText>{t('orders.paymentOrders.updateStatus')}</ListItemText>
-            </MenuItem>
-
-            <MenuItem
-              onClick={() => {
-                onReject(row);
-                setAnchorEl(null);
-              }}
-            >
-              <ListItemIcon>
-                <Iconify icon="solar:forbidden-circle-bold" sx={{ color: 'error.main' }} />
-              </ListItemIcon>
-              <ListItemText>{t('orders.paymentOrders.reject')}</ListItemText>
-            </MenuItem>
-          </>
-        )}
-
-        <MenuItem
-          onClick={() => {
-            onNotify(row, 0);
-            setAnchorEl(null);
-          }}
-        >
-          <ListItemIcon>
-            <Iconify icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
-          </ListItemIcon>
-          <ListItemText>{t('orders.paymentOrders.successNotification')}</ListItemText>
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            onNotify(row, 2);
-            setAnchorEl(null);
-          }}
-        >
-          <ListItemIcon>
-            <Iconify icon="solar:close-circle-bold" sx={{ color: 'error.main' }} />
-          </ListItemIcon>
-          <ListItemText>{t('orders.paymentOrders.failureNotification')}</ListItemText>
-        </MenuItem>
-
-        <Divider />
-
+        {!isProduction && [
+          <MenuItem
+            onClick={() => {
+              onNotify(row, 0);
+              setAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <Iconify icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
+            </ListItemIcon>
+            <ListItemText>{t('orders.paymentOrders.successNotification')}</ListItemText>
+          </MenuItem>,
+          <MenuItem
+            onClick={() => {
+              onNotify(row, 2);
+              setAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <Iconify icon="solar:close-circle-bold" sx={{ color: 'error.main' }} />
+            </ListItemIcon>
+            <ListItemText>{t('orders.paymentOrders.failureNotification')}</ListItemText>
+          </MenuItem>,
+          <Divider />,
+        ]}
         <MenuItem
           onClick={() => {
             onViewDetail(row);

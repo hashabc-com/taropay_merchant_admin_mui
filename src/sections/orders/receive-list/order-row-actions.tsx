@@ -43,35 +43,35 @@ export function OrderRowActions({ row, onNotify, onUpdateStatus, onViewDetail }:
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {isProduction ? null : (
-          <>
-            <MenuItem
-              onClick={() => {
-                onNotify(row, 0);
-                setAnchorEl(null);
-              }}
-            >
-              <ListItemIcon>
-                <Iconify icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
-              </ListItemIcon>
-              <ListItemText>{t('orders.paymentOrders.successNotification')}</ListItemText>
-            </MenuItem>
+        {!isProduction && [
+          <MenuItem
+            key="notify-success"
+            onClick={() => {
+              onNotify(row, 0);
+              setAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <Iconify icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
+            </ListItemIcon>
+            <ListItemText>{t('orders.paymentOrders.successNotification')}</ListItemText>
+          </MenuItem>,
 
-            <MenuItem
-              onClick={() => {
-                onNotify(row, 2);
-                setAnchorEl(null);
-              }}
-            >
-              <ListItemIcon>
-                <Iconify icon="solar:close-circle-bold" sx={{ color: 'error.main' }} />
-              </ListItemIcon>
-              <ListItemText>{t('orders.paymentOrders.failureNotification')}</ListItemText>
-            </MenuItem>
+          <MenuItem
+            key="notify-fail"
+            onClick={() => {
+              onNotify(row, 2);
+              setAnchorEl(null);
+            }}
+          >
+            <ListItemIcon>
+              <Iconify icon="solar:close-circle-bold" sx={{ color: 'error.main' }} />
+            </ListItemIcon>
+            <ListItemText>{t('orders.paymentOrders.failureNotification')}</ListItemText>
+          </MenuItem>,
 
-            <Divider />
-          </>
-        )}
+          <Divider key="divider" />,
+        ]}
 
         <MenuItem
           onClick={() => {
