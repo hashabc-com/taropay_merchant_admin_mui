@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
-import { useCountryStore } from 'src/stores/country-store';
+import { useAuthStore } from 'src/stores/auth-store';
 import { useLanguage } from 'src/context/language-provider';
 
 import { Iconify } from 'src/components/iconify';
@@ -45,7 +45,7 @@ function formatDate(date: Date, timezone: string, locale: string) {
 // ----------------------------------------------------------------------
 
 export function CountryTime() {
-  const { selectedCountry } = useCountryStore();
+  const countryCode = useAuthStore((s) => s.userInfo?.countryCode);
   const { t, lang } = useLanguage();
   const [now, setNow] = useState(() => new Date());
 
@@ -54,12 +54,12 @@ export function CountryTime() {
     return () => clearInterval(timer);
   }, []);
 
-  if (!selectedCountry) return null;
+  if (!countryCode) return null;
 
-  const timezone = COUNTRY_TIMEZONE[selectedCountry.code];
+  const timezone = COUNTRY_TIMEZONE[countryCode];
   if (!timezone) return null;
 
-  const countryName = t(`common.countrys.${selectedCountry.code}`);
+  const countryName = t(`common.countrys.${countryCode}`);
   const countryTime = formatTime(now, timezone, lang);
   const countryDate = formatDate(now, timezone, lang);
   const beijingTime = formatTime(now, 'Asia/Shanghai', lang);
