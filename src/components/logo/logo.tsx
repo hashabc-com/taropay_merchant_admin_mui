@@ -44,7 +44,7 @@ export function Logo({
         userSelect: 'none',
       }}
     >
-      TaroPay
+      TaroPay2
     </span>
   );
 
