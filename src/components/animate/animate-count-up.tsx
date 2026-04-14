@@ -16,6 +16,8 @@ export type AnimateCountUpProps = TypographyProps & {
   unit?: 'k' | 'm' | 'b' | string;
   once?: UseInViewOptions['once'];
   amount?: UseInViewOptions['amount'];
+  /** Skip k/m/b shortening and display full number with thousand separators */
+  disableShorten?: boolean;
 };
 
 export function AnimateCountUp({
@@ -28,11 +30,12 @@ export function AnimateCountUp({
   amount = 0.5,
   unit: unitProp,
   component = 'p',
+  disableShorten,
   ...other
 }: AnimateCountUpProps) {
   const countRef = useRef(null);
 
-  const shortNumber = shortenNumber(to);
+  const shortNumber = disableShorten ? undefined : shortenNumber(to);
 
   const startCount = useMotionValue<number>(from);
   const endCount = shortNumber ? shortNumber.value : to;
@@ -41,9 +44,13 @@ export function AnimateCountUp({
 
   const inView = useInView(countRef, { once, amount });
 
-  const rounded = useTransform(startCount, (latest) =>
-    latest.toFixed(isFloat(latest) ? toFixed : 0)
-  );
+  const rounded = useTransform(startCount, (latest) => {
+    const fixed = latest.toFixed(isFloat(latest) ? toFixed : 0);
+    if (disableShorten) {
+      return fixed.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    return fixed;
+  });
 
   useEffect(() => {
     if (inView) {

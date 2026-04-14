@@ -91,7 +91,13 @@ export function DashboardStats({ amountInfo, isLoading }: Props) {
                   {displayCurrency}
                 </Typography>
               )}
-              <AnimateCountUp variant="h5" to={card.numericValue} toFixed={2} duration={1.5} />
+              <AnimateCountUp
+                variant="h5"
+                to={card.numericValue}
+                toFixed={2}
+                duration={1.5}
+                disableShorten
+              />
             </Box>
           </Box>
         </Card>
