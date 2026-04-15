@@ -16,6 +16,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { useAuthStore } from 'src/stores/auth-store';
 import { useLanguage } from 'src/context/language-provider';
 import { addSubUser, updateSubUser, updateSubUserPass } from 'src/api/sub-account';
 
@@ -79,6 +80,17 @@ function AddEditDialog({ open, mode, currentRow, treeData, onClose, onSuccess, t
   const [loading, setLoading] = useState(false);
   const { dialog: googleAuthDialog, withGoogleAuth } = useGoogleAuthDialog();
 
+  const subMerchants = useAuthStore((s) => s.userInfo?.subMerchants);
+
+  const merchantOptions = useMemo(
+    () =>
+      (subMerchants ?? []).map((m) => ({
+        label: m.customerName || m.account || m.appid,
+        value: m.appid,
+      })),
+    [subMerchants]
+  );
+
   const schema = useMemo(
     () =>
       z.object({
@@ -87,6 +99,9 @@ function AddEditDialog({ open, mode, currentRow, treeData, onClose, onSuccess, t
         password: z.string().optional(),
         status: z.number().int().min(0).max(1),
         roleId: z.array(z.string()).min(1, t('subAccount.roleIdRequired')),
+        merchantId: z
+          .array(z.object({ label: z.string(), value: z.string() }))
+          .min(1, t('subAccount.merchantRequired')),
       }),
     [t]
   );
@@ -101,6 +116,7 @@ function AddEditDialog({ open, mode, currentRow, treeData, onClose, onSuccess, t
       password: '',
       status: 0,
       roleId: [],
+      merchantId: [],
     },
   });
 
@@ -119,12 +135,16 @@ function AddEditDialog({ open, mode, currentRow, treeData, onClose, onSuccess, t
         roleId: roleArr,
         account: currentRow.account || '',
         password: '******',
+        merchantId: (currentRow.appidList || []).map(
+          (appid) =>
+            merchantOptions.find((o) => o.value === appid) || { label: appid, value: appid }
+        ),
       });
     }
     if (open && mode === 'add') {
-      reset({ id: '', account: '', password: '', status: 0, roleId: [] });
+      reset({ id: '', account: '', password: '', status: 0, roleId: [], merchantId: [] });
     }
-  }, [open, mode, currentRow, reset]);
+  }, [open, mode, currentRow, reset, merchantOptions]);
 
   const onSubmit = handleSubmit(async (values: any) => {
     withGoogleAuth(async (googleCode) => {
@@ -136,6 +156,7 @@ function AddEditDialog({ open, mode, currentRow, treeData, onClose, onSuccess, t
             password: values.password,
             status: values.status as SubUserStatus,
             roleId: values.roleId.join(','),
+            merchantId: values.merchantId.map((m: any) => m.value).join(','),
             googleCode,
           });
           if (res.code == 1) {
@@ -150,6 +171,7 @@ function AddEditDialog({ open, mode, currentRow, treeData, onClose, onSuccess, t
             id: values.id,
             status: values.status as SubUserStatus,
             roleId: values.roleId.join(','),
+            merchantId: values.merchantId.map((m: any) => m.value).join(','),
             googleCode,
           });
           if (res.code == 1) {
@@ -193,6 +215,16 @@ function AddEditDialog({ open, mode, currentRow, treeData, onClose, onSuccess, t
                 <MenuItem value={0}>{t('subAccount.enabled')}</MenuItem>
                 <MenuItem value={1}>{t('subAccount.disabled')}</MenuItem>
               </Field.Select>
+
+              <Field.Autocomplete
+                name="merchantId"
+                label={t('subAccount.bindMerchant')}
+                multiple
+                options={merchantOptions}
+                getOptionLabel={(option: any) => option.label}
+                isOptionEqualToValue={(option: any, val: any) => option.value === val.value}
+                disableCloseOnSelect
+              />
 
               <Box>
                 <Box sx={{ mb: 1, typography: 'subtitle2' }}>{t('subAccount.roleId')}</Box>

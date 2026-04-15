@@ -16,12 +16,13 @@ import ListItemText from '@mui/material/ListItemText';
 import { DataGrid, type GridPaginationModel } from '@mui/x-data-grid';
 
 import { updateSubUser } from 'src/api/sub-account';
+import { useAuthStore } from 'src/stores/auth-store';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useLanguage } from 'src/context/language-provider';
 
 import { Iconify } from 'src/components/iconify';
-import { dataGridSx, processColumns } from 'src/components/data-grid';
 import { useGoogleAuthDialog } from 'src/components/google-auth-dialog';
+import { dataGridSx, processColumns, renderCellWithTooltip } from 'src/components/data-grid';
 
 import { useMenuList, useSubAccountList } from './hooks';
 import { SubAccountDialogs } from './sub-account-dialogs';
@@ -38,6 +39,15 @@ export function SubAccountManagementView() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useLanguage();
   const { dialog: googleAuthDialog, withGoogleAuth } = useGoogleAuthDialog();
+  const subMerchants = useAuthStore((s) => s.userInfo?.subMerchants);
+
+  const appidNameMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    subMerchants?.forEach((m) => {
+      map[m.appid] = m.customerName || m.account || m.appid;
+    });
+    return map;
+  }, [subMerchants]);
 
   const [dialogOpen, setDialogOpen] = useState<DialogType | null>(null);
   const [currentRow, setCurrentRow] = useState<SubUser | null>(null);
@@ -80,6 +90,15 @@ export function SubAccountManagementView() {
           flex: 1,
           minWidth: 150,
           tooltip: true,
+        },
+        {
+          field: 'appidList',
+          headerName: t('subAccount.bindMerchant'),
+          flex: 1,
+          minWidth: 180,
+          renderCell: renderCellWithTooltip,
+          valueGetter: (value: string[]) =>
+            value?.map((appid) => appidNameMap[appid] || appid).join(', ') || '-',
         },
         {
           field: 'status',

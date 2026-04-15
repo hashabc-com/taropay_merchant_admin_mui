@@ -15,6 +15,7 @@ import DialogContent from '@mui/material/DialogContent';
 import CircularProgress from '@mui/material/CircularProgress';
 import DialogContentText from '@mui/material/DialogContentText';
 
+import { useMerchantStore } from 'src/stores';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useLanguage } from 'src/context/language-provider';
 import { getSecret, updateSecret, type ISecretInfo } from 'src/api/secret';
@@ -35,7 +36,7 @@ export function SecretManagementView() {
   const [keyPairOpen, setKeyPairOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
   const [secretInfo, setSecretInfo] = useState<ISecretInfo>({});
-
+  const selectedMerchant = useMerchantStore((s) => s.selectedMerchant);
   const handleKeyPairGenerated = (publicKey: string) => {
     setMerchantPublic(publicKey);
     setKeyPairOpen(false);
@@ -44,12 +45,12 @@ export function SecretManagementView() {
 
   const fetchSecret = async () => {
     try {
-      const userInfo = JSON.parse(localStorage.getItem('_userInfo') || '{}');
+      // const userInfo = JSON.parse(localStorage.getItem('_userInfo') || '{}');
       setLoading(true);
-      const res = await getSecret({ appId: userInfo?.merchantId });
+      const res = await getSecret({ appId: selectedMerchant?.appid });
       const data = res.result || res.data || {};
       setSecretInfo(data);
-      setAppId(userInfo?.merchantId ?? '');
+      setAppId(selectedMerchant?.appid ?? '');
       setPlatformPublic(data.platfromPublic || '');
       setMerchantPublic(data.merchantPublic || '');
     } catch {

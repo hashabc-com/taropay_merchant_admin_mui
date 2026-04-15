@@ -143,7 +143,9 @@
     "roleIdRequired": "Please select permission menu",
     "addSuccess": "Added successfully",
     "editSuccess": "Edited successfully",
-    "passwordUpdateSuccess": "Password changed successfully"
+    "passwordUpdateSuccess": "Password changed successfully",
+    "bindMerchant": "Bindable Merchants",
+    "merchantRequired": "Please select at least one merchant"
   },
   "dashboard": {
     "title": "Overview",

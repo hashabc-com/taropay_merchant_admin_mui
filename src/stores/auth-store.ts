@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { useMerchantStore } from './merchant-store';
+import { useMerchantStore, type Merchant } from './merchant-store';
 import { useCountryStore, type SupportedCurrency } from './country-store';
 
 // ----------------------------------------------------------------------
@@ -23,6 +23,7 @@ type UserInfo = {
   countryCode?: string;
   currency?: string;
   resourceList?: IResource[];
+  subMerchants?: Merchant[];
 };
 
 interface AuthState {
@@ -45,10 +46,20 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: (token, userInfo) => {
     localStorage.setItem('_token', token);
     localStorage.setItem('_userInfo', JSON.stringify(userInfo));
-    // Sync displayCurrency from the merchant's bound currency (same as old project)
-    if (userInfo.currency) {
+    // Initialize selected merchant from subMerchants & sync currency
+    if (userInfo.subMerchants?.length) {
+      const merchantState = useMerchantStore.getState();
+      if (!merchantState.selectedMerchant) {
+        const first = userInfo.subMerchants[0];
+        merchantState.setSelectedMerchant(first);
+        if (first.currency) {
+          useCountryStore.getState().setDisplayCurrency(first.currency as SupportedCurrency);
+        }
+      }
+    } else if (userInfo.currency) {
       useCountryStore.getState().setDisplayCurrency(userInfo.currency as SupportedCurrency);
     }
+
     set({ token, isAuthenticated: true, userInfo });
   },
 
@@ -67,3 +78,15 @@ export const useAuthStore = create<AuthState>((set) => ({
     window.location.href = `/auth/jwt/sign-in?returnTo=${encodeURIComponent(redirect)}`;
   },
 }));
+
+// Hydrate merchant store on initial app load
+if (initialUserInfo?.subMerchants?.length) {
+  const merchantState = useMerchantStore.getState();
+  if (!merchantState.selectedMerchant) {
+    const first = initialUserInfo.subMerchants[0];
+    merchantState.setSelectedMerchant(first);
+    if (first.currency) {
+      useCountryStore.getState().setDisplayCurrency(first.currency as SupportedCurrency);
+    }
+  }
+}

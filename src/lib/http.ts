@@ -66,14 +66,15 @@ class HttpClient {
         // country auto-injection disabled — merchant admin backend
         // determines the country from the merchant's binding.
 
-        // auto inject merchantId from userInfo (set during login)
+        // auto inject merchantId from selected merchant (merchant-storage)
         if (rc.autoAddMerchantId !== false) {
           try {
-            const raw = localStorage.getItem('_userInfo');
+            const raw = localStorage.getItem('merchant-storage');
             if (raw) {
-              const userInfo = JSON.parse(raw);
-              if (userInfo?.merchantId) {
-                this.addParam(config, 'merchantId', userInfo.merchantId);
+              const parsed = JSON.parse(raw);
+              const appid = parsed?.state?.selectedMerchant?.appid;
+              if (appid) {
+                this.addParam(config, 'merchantId', appid);
               }
             }
           } catch {

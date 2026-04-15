@@ -11,6 +11,7 @@ export interface SubUser {
   account: string;
   status: SubUserStatus;
   roleId: string | string[];
+  appidList?: string[];
   createTime?: string;
 }
 
@@ -25,6 +26,7 @@ export interface SubUserAddRequest {
   status: SubUserStatus;
   roleId: string;
   googleCode: string;
+  merchantId: string;
 }
 
 export interface SubUserUpdateRequest {
@@ -33,6 +35,7 @@ export interface SubUserUpdateRequest {
   mobile?: string;
   status?: SubUserStatus;
   roleId?: string;
+  merchantId?: string;
   googleCode?: string;
 }
 
@@ -57,15 +60,19 @@ export interface RawMenuItem {
 
 // 子账号列表
 export const getSubUserList = (params: SubUserListParams) =>
-  http.get('/customer/sub/user/getUserList', params);
+  http.get('/customer/sub/user/getUserList', params, { autoAddMerchantId: false });
 
 // 新增子账号
 export const addSubUser = (data: SubUserAddRequest) =>
-  http.post<ResponseData<SubUser>>('/customer/sub/user/addUser', data);
+  http.post<ResponseData<SubUser>>('/customer/sub/user/addUser', data, {
+    autoAddMerchantId: false,
+  });
 
 // 修改子账号
 export const updateSubUser = (data: SubUserUpdateRequest) =>
-  http.post<ResponseData<SubUser>>('/customer/sub/user/updateUser', data);
+  http.post<ResponseData<SubUser>>('/customer/sub/user/updateUser', data, {
+    autoAddMerchantId: false,
+  });
 
 // 修改子账号密码
 export const updateSubUserPass = (data: SubUserUpdatePassRequest) =>

@@ -138,12 +138,36 @@ export function JwtSignInView() {
         localStorage.setItem('_token', res.result.TOKEN);
         localStorage.setItem('_userInfo', JSON.stringify(res.result.userInfo));
 
-        // 2. Calculate target route
+        // 2. Initialize selected merchant from subMerchants (persist for next page load)
+        const { subMerchants } = res.result.userInfo;
+        if (subMerchants?.length) {
+          const firstMerchant = subMerchants[0];
+          localStorage.setItem(
+            'merchant-storage',
+            JSON.stringify({ state: { selectedMerchant: firstMerchant }, version: 0 })
+          );
+          // Sync first merchant's currency to country-storage
+          if (firstMerchant.currency) {
+            localStorage.setItem(
+              'country-storage',
+              JSON.stringify({
+                state: {
+                  selectedCountry: null,
+                  displayCurrency: firstMerchant.currency,
+                  rates: {},
+                },
+                version: 0,
+              })
+            );
+          }
+        }
+
+        // 3. Calculate target route
         const searchParams = new URLSearchParams(window.location.search);
         const returnTo = searchParams.get('returnTo');
         const target = returnTo || '/';
 
-        // 3. Navigate directly — do NOT call authLogin() to avoid triggering
+        // 4. Navigate directly — do NOT call authLogin() to avoid triggering
         //    GuestGuard's redirect. The new page will hydrate from localStorage.
         setGoogleOpen(false);
         window.location.href = target;

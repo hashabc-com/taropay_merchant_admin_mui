@@ -143,7 +143,9 @@
     "roleIdRequired": "请选择权限菜单",
     "addSuccess": "新增成功",
     "editSuccess": "编辑成功",
-    "passwordUpdateSuccess": "密码修改成功"
+    "passwordUpdateSuccess": "密码修改成功",
+    "bindMerchant": "绑定商户",
+    "merchantRequired": "请至少选择一个商户"
   },
   "dashboard": {
     "title": "概览",

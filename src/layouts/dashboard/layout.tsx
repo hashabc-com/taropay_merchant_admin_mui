@@ -19,7 +19,7 @@ import { useAuthStore } from 'src/stores/auth-store';
 import { Logo } from 'src/components/logo';
 import { CountryTime } from 'src/components/country-time';
 import { useSettingsContext } from 'src/components/settings';
-import { CurrencySelector } from 'src/components/country-merchant-selector';
+import { CurrencySelector, MerchantSelector } from 'src/components/country-merchant-selector';
 import { KeyPairGeneratorDialog } from 'src/components/key-pair-generator-dialog';
 
 import { NavMobile } from './nav-mobile';
@@ -157,6 +157,8 @@ export function DashboardLayout({
             flexItem
             sx={{ mx: 0.5, display: { xs: 'none', sm: 'flex' } }}
           />
+          {/** @slot Merchant selector */}
+          <MerchantSelector />
           {/** @slot Currency selector */}
           <CurrencySelector />
 

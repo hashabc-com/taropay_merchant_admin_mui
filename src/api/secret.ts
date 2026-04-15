@@ -12,7 +12,7 @@ export interface ISecretInfo {
 }
 
 export const getSecret = (params?: { appId?: string }) =>
-  http.get('/customer/user/v1/getSecret', params);
+  http.get('/customer/user/v1/getSecret', params, { autoAddMerchantId: false });
 
 export const updateSecret = (data: ISecretInfo) =>
   http.post('/customer/user/v1/updPublicSecret', data);

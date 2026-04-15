@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 
 import { useAuthStore } from 'src/stores/auth-store';
 import { useLanguage } from 'src/context/language-provider';
+import { useMerchantStore } from 'src/stores/merchant-store';
 import { useCountryStore, SUPPORTED_CURRENCIES } from 'src/stores/country-store';
 
 import { compactSelectSx } from './styles';
@@ -32,7 +33,10 @@ export function CurrencySelector() {
   const { t } = useLanguage();
   const { displayCurrency, setDisplayCurrency, setRates } = useCountryStore();
   const userInfo = useAuthStore((s) => s.userInfo);
-  const defaultCurrency = userInfo?.currency as string;
+  const selectedMerchant = useMerchantStore((s) => s.selectedMerchant);
+
+  // Prefer selected merchant's currency, fall back to userInfo.currency
+  const defaultCurrency = (selectedMerchant?.currency ?? userInfo?.currency) as string;
 
   const fetchRates = useCallback(
     async (currency: string) => {
