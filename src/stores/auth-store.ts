@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { useMerchantStore, type Merchant } from './merchant-store';
+import { type Merchant, useMerchantStore } from './merchant-store';
 import { useCountryStore, type SupportedCurrency } from './country-store';
 
 // ----------------------------------------------------------------------

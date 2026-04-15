@@ -1,5 +1,3 @@
-import type { Dayjs } from 'dayjs';
-
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -8,10 +6,6 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
-
-// ----------------------------------------------------------------------
-
-type DateInput = Dayjs | Date | string | number | null | undefined;
 
 // ----------------------------------------------------------------------
 

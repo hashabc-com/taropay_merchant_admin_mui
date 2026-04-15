@@ -153,7 +153,7 @@ export function SubAccountManagementView() {
           ),
         },
       ]),
-    [t, mutate, withGoogleAuth]
+    [t, appidNameMap, withGoogleAuth, mutate]
   );
 
   return (

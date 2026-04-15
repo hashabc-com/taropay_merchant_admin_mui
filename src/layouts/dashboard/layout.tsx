@@ -19,8 +19,8 @@ import { useAuthStore } from 'src/stores/auth-store';
 import { Logo } from 'src/components/logo';
 import { CountryTime } from 'src/components/country-time';
 import { useSettingsContext } from 'src/components/settings';
-import { CurrencySelector, MerchantSelector } from 'src/components/country-merchant-selector';
 import { KeyPairGeneratorDialog } from 'src/components/key-pair-generator-dialog';
+import { CurrencySelector, MerchantSelector } from 'src/components/country-merchant-selector';
 
 import { NavMobile } from './nav-mobile';
 import { VerticalDivider } from './content';
