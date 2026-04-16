@@ -15,7 +15,8 @@ export const getMerchantList = () =>
 export const getProductDict = (country: string) =>
   http.get<{ payinChannel: string[]; payoutChannel: string[] }>(
     '/customer/user/v1/getChannelTypeList',
-    { country }
+    { country },
+    { autoAddMerchantId: false }
   );
 
 export const payOutNotify = (data: { transId: string; status: number }) =>

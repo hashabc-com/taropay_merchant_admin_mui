@@ -69,7 +69,7 @@ export function PaymentListSearch() {
 
       <TextField
         size="small"
-        placeholder={t('orders.paymentOrders.merchantOrderNo')}
+        placeholder={t('orders.paymentOrders.platformOrderNo')}
         value={values.refNo}
         onChange={(e) => setField('refNo', e.target.value)}
         onKeyDown={handleKeyDown}
@@ -77,7 +77,7 @@ export function PaymentListSearch() {
       />
       <TextField
         size="small"
-        placeholder={t('orders.paymentOrders.platformOrderNo')}
+        placeholder={t('orders.paymentOrders.merchantOrderNo')}
         value={values.transId}
         onChange={(e) => setField('transId', e.target.value)}
         onKeyDown={handleKeyDown}
@@ -109,12 +109,14 @@ export function PaymentListSearch() {
           value={values.status}
           onChange={(e) => setField('status', e.target.value)}
           renderValue={(sel) => {
-            if (!sel) return <span style={{ color: '#aaa' }}>{t('common.pleaseSelect')}</span>;
-            return PAYMENT_STATUS_MAP[sel]?.label || sel;
+            if (sel == null || sel === '' || sel === undefined)
+              return <span style={{ color: '#aaa' }}>{t('common.pleaseSelect')}</span>;
+            const entry = Object.values(PAYMENT_STATUS_MAP).find((e) => String(e.value) === sel);
+            return entry?.label || sel;
           }}
         >
-          {Object.entries(PAYMENT_STATUS_MAP).map(([key, { label }]) => (
-            <MenuItem key={key} value={key}>
+          {Object.entries(PAYMENT_STATUS_MAP).map(([key, { label, value }]) => (
+            <MenuItem key={key} value={String(value)}>
               {label}
             </MenuItem>
           ))}

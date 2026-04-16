@@ -113,14 +113,15 @@ export function OrderListSearch() {
           value={values.status}
           onChange={(e) => setField('status', e.target.value)}
           renderValue={(selected) => {
-            if (!selected) {
+            if (selected == null || selected === '' || selected === undefined) {
               return <span style={{ color: '#aaa' }}>{t('common.pleaseSelect')}</span>;
             }
-            return ORDER_STATUS_MAP[selected]?.label || selected;
+            const entry = Object.values(ORDER_STATUS_MAP).find((e) => String(e.value) === selected);
+            return entry?.label || selected;
           }}
         >
-          {Object.entries(ORDER_STATUS_MAP).map(([key, { label }]) => (
-            <MenuItem key={key} value={key}>
+          {Object.entries(ORDER_STATUS_MAP).map(([key, { label, value }]) => (
+            <MenuItem key={key} value={String(value)}>
               {label}
             </MenuItem>
           ))}

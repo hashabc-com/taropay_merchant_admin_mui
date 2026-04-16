@@ -6,8 +6,33 @@ import GlobalStyles from '@mui/material/GlobalStyles';
 
 // ----------------------------------------------------------------------
 
+const RELOAD_KEY = 'chunk-reload';
+
+function isChunkLoadError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message;
+  return (
+    msg.includes('Failed to fetch dynamically imported module') ||
+    msg.includes('Importing a module script failed') ||
+    msg.includes('error loading dynamically imported module') ||
+    (error.name === 'TypeError' && msg.includes('Failed to fetch'))
+  );
+}
+
 export function ErrorBoundary() {
   const error = useRouteError();
+
+  if (isChunkLoadError(error)) {
+    const reloaded = sessionStorage.getItem(RELOAD_KEY);
+    if (!reloaded) {
+      sessionStorage.setItem(RELOAD_KEY, '1');
+      window.location.reload();
+      return null;
+    }
+    sessionStorage.removeItem(RELOAD_KEY);
+  } else {
+    sessionStorage.removeItem(RELOAD_KEY);
+  }
 
   return (
     <>

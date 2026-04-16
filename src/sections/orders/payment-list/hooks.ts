@@ -37,11 +37,11 @@ export type PaymentOrder = {
 
 export const PAYMENT_STATUS_MAP: Record<
   string,
-  { label: string; color: 'success' | 'info' | 'error' }
+  { label: string; color: 'success' | 'info' | 'error'; value: number }
 > = {
-  付款成功: { label: '付款成功', color: 'success' },
-  待付款: { label: '待付款', color: 'info' },
-  付款失败: { label: '付款失败', color: 'error' },
+  付款成功: { label: '付款成功', color: 'success', value: 0 },
+  待付款: { label: '待付款', color: 'info', value: 1 },
+  付款失败: { label: '付款失败', color: 'error', value: 2 },
 };
 
 // ----------------------------------------------------------------------

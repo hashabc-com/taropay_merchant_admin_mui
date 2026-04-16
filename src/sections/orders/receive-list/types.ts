@@ -59,11 +59,11 @@ export type OrderStats = {
 
 export const ORDER_STATUS_MAP: Record<
   string,
-  { label: string; color: 'success' | 'info' | 'error' | 'default' | 'warning' }
+  { label: string; color: 'success' | 'info' | 'error' | 'default' | 'warning'; value: number }
 > = {
-  支付成功: { label: '支付成功', color: 'success' },
-  待支付: { label: '待支付', color: 'info' },
-  支付失败: { label: '支付失败', color: 'error' },
-  已过期: { label: '已过期', color: 'default' },
-  部分支付: { label: '部分支付', color: 'warning' },
+  支付成功: { label: '支付成功', color: 'success', value: 0 },
+  待支付: { label: '待支付', color: 'info', value: 1 },
+  支付失败: { label: '支付失败', color: 'error', value: 2 },
+  已过期: { label: '已过期', color: 'default', value: 3 },
+  部分支付: { label: '部分支付', color: 'warning', value: 4 },
 };
