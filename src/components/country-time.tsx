@@ -4,7 +4,8 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
-import { useAuthStore } from 'src/stores/auth-store';
+import { useMerchantStore } from 'src/stores';
+// import { useAuthStore } from 'src/stores/auth-store';
 import { useLanguage } from 'src/context/language-provider';
 
 import { Iconify } from 'src/components/iconify';
@@ -45,7 +46,8 @@ function formatDate(date: Date, timezone: string, locale: string) {
 // ----------------------------------------------------------------------
 
 export function CountryTime() {
-  const countryCode = useAuthStore((s) => s.userInfo?.countryCode);
+  // const countryCode = useAuthStore((s) => s.userInfo?.countryCode);
+  const countryCode = useMerchantStore((s) => s.selectedMerchant?.country);
   const { t, lang } = useLanguage();
   const [now, setNow] = useState(() => new Date());
 
@@ -98,6 +100,7 @@ export function CountryTime() {
       <Box
         sx={{
           display: { xs: 'none', md: 'flex' },
+          ml: 2,
           alignItems: 'center',
           gap: 0.75,
           cursor: 'default',

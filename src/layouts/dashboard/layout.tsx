@@ -143,6 +143,9 @@ export function DashboardLayout({
             sx={{ ...(isNavHorizontal && { color: 'var(--layout-nav-text-primary-color)' }) }}
           /> */}
 
+          {/** @slot Merchant selector */}
+          <MerchantSelector />
+
           {/** @slot Country time */}
           <CountryTime />
         </>
@@ -157,8 +160,6 @@ export function DashboardLayout({
             flexItem
             sx={{ mx: 0.5, display: { xs: 'none', sm: 'flex' } }}
           />
-          {/** @slot Merchant selector */}
-          <MerchantSelector />
           {/** @slot Currency selector */}
           <CurrencySelector />
 
