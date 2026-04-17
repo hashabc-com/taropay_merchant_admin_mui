@@ -101,7 +101,7 @@ export function CountryTime() {
         sx={{
           display: { xs: 'none', md: 'flex' },
           ml: 2,
-          alignItems: 'center',
+          alignItems: 'flex-end',
           gap: 0.75,
           cursor: 'default',
           color: 'text.secondary',
@@ -112,7 +112,7 @@ export function CountryTime() {
         <Iconify icon="solar:clock-circle-outline" width={18} />
         <Typography
           variant="caption"
-          sx={{ fontSize: 18, fontWeight: 600, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}
+          sx={{ fontSize: 16, fontWeight: 600, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}
         >
           {countryTime}
         </Typography>
