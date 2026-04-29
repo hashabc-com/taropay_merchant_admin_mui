@@ -4,6 +4,8 @@ import { useMemo } from 'react';
 
 import { paths } from 'src/routes/paths';
 
+import isProduction from 'src/utils/isProduction';
+
 import { CONFIG } from 'src/global-config';
 import { useLanguage } from 'src/context/language-provider';
 
@@ -114,11 +116,15 @@ export function useNavData(): NavSectionProps['data'] {
             path: 'https://docs.taropay.com/guide/overview',
             icon: ICONS.external,
           },
-          {
-            title: t('sidebar.apiPlayground'),
-            path: paths.apiPlayground,
-            icon: <Iconify icon="solar:code-bold-duotone" width={24} />,
-          },
+          ...(!isProduction
+            ? [
+                {
+                  title: t('sidebar.apiPlayground'),
+                  path: paths.apiPlayground,
+                  icon: <Iconify icon="solar:code-bold-duotone" width={24} />,
+                },
+              ]
+            : []),
         ],
       },
     ],

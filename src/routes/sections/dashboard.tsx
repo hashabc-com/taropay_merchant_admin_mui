@@ -3,6 +3,8 @@ import type { RouteObject } from 'react-router';
 import { Outlet } from 'react-router';
 import { lazy, Suspense } from 'react';
 
+import isProduction from 'src/utils/isProduction';
+
 import { CONFIG } from 'src/global-config';
 import { DashboardLayout } from 'src/layouts/dashboard';
 
@@ -76,7 +78,7 @@ export const dashboardRoutes: RouteObject[] = [
       { path: 'export/management', element: <ExportManagement /> },
       { path: 'sub-account-management', element: <SubAccountManagement /> },
       { path: 'secret/management', element: <SecretManagement /> },
-      { path: 'api-playground', element: <ApiPlayground /> },
+      ...(!isProduction ? [{ path: 'api-playground', element: <ApiPlayground /> }] : []),
     ],
   },
 ];
