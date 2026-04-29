@@ -110,11 +110,9 @@ export function SignatureSteps({ steps }: SignatureStepsProps) {
                 <CodeBlock label="TIMESTAMP">{steps.timestamp}</CodeBlock>
                 <CodeBlock label="NONCE">{steps.nonce}</CodeBlock>
               </Stack>
+              <ArrowDown />
             </Box>
           </Stack>
-
-          <ArrowDown />
-
           {/* Step 2: Sort params — show original vs sorted */}
           <Stack direction="row" spacing={1.5} alignItems="flex-start">
             <StepNumber n={2} />
@@ -148,10 +146,9 @@ export function SignatureSteps({ steps }: SignatureStepsProps) {
 
               {/* Joined string */}
               <CodeBlock label={t('apiPlayground.joinedString')}>{steps.sortedParams}</CodeBlock>
+              <ArrowDown />
             </Box>
           </Stack>
-
-          <ArrowDown />
 
           {/* Step 3: Build sign data */}
           <Stack direction="row" spacing={1.5} alignItems="flex-start">
@@ -189,10 +186,9 @@ export function SignatureSteps({ steps }: SignatureStepsProps) {
                   {steps.sortedParams}
                 </Box>
               </CodeBlock>
+              <ArrowDown />
             </Box>
           </Stack>
-
-          <ArrowDown />
 
           {/* Step 4: Ed25519 sign */}
           <Stack direction="row" spacing={1.5} alignItems="flex-start">
