@@ -338,6 +338,7 @@ export function ApiPlaygroundView() {
             <KeyPairGeneratorDialog
               open={keyGenOpen}
               onClose={() => setKeyGenOpen(false)}
+              navigateToSecretManagement
               onGenerated={(_publicKey, generatedPrivateKey) => {
                 setPrivateKey(generatedPrivateKey);
               }}
