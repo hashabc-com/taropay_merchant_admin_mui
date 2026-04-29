@@ -129,7 +129,7 @@ export function ErrorCodeDrawer({ open, onClose, highlightCode }: ErrorCodeDrawe
                   borderBottom: 1,
                   borderColor: 'divider',
                   ...(isHighlighted && {
-                    bgcolor: 'error.lighter',
+                    bgcolor: 'error.highlight',
                   }),
                 }}
               >
