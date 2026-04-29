@@ -218,13 +218,22 @@ export function ApiPlaygroundView() {
         body: JSON.stringify(bodyObj),
       });
 
-      const data = await response.json();
+      let data: any;
+      try {
+        data = await response.json();
+      } catch {
+        const text = await response.text().catch(() => '');
+        data = { error: `HTTP ${response.status}`, body: text || 'Non-JSON response' };
+      }
+
       setResponseInfo({ status: response.status, data });
 
       if (data.code === 0 || data.code === '0') {
         toast.success(t('apiPlayground.requestSuccess'));
       } else {
-        toast.error(`code: ${data.code} — ${data.message || t('apiPlayground.requestBizError')}`);
+        toast.error(
+          `code: ${data.code ?? response.status} — ${data.message || t('apiPlayground.requestBizError')}`
+        );
       }
     } catch (err: any) {
       toast.error(err.message || t('apiPlayground.requestFailed'));
