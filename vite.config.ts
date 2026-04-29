@@ -31,6 +31,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        '/sandbox-api': {
+          target: 'https://sandbox.taropay.com',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (p) => p.replace(/^\/sandbox-api/, '/api'),
+        },
       },
     },
     resolve: {

@@ -14,7 +14,7 @@ import { useAuthContext } from '../hooks';
 // ----------------------------------------------------------------------
 
 /** Routes that bypass permission checks (always accessible when logged in) */
-const WHITELIST_ROUTES = ['/settings/appearance'];
+const WHITELIST_ROUTES = ['/settings/appearance', '/api-playground'];
 
 type AuthGuardProps = {
   children: React.ReactNode;

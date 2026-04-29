@@ -7,6 +7,7 @@ import { paths } from 'src/routes/paths';
 import { CONFIG } from 'src/global-config';
 import { useLanguage } from 'src/context/language-provider';
 
+import { Iconify } from 'src/components/iconify';
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -112,6 +113,11 @@ export function useNavData(): NavSectionProps['data'] {
             title: t('sidebar.apiDocs'),
             path: 'https://docs.taropay.com/guide/overview',
             icon: ICONS.external,
+          },
+          {
+            title: t('sidebar.apiPlayground'),
+            path: paths.apiPlayground,
+            icon: <Iconify icon="solar:code-bold-duotone" width={24} />,
           },
         ],
       },

@@ -33,6 +33,9 @@ const SubAccountManagement = lazy(() => import('src/pages/system/sub-account-man
 // Secret
 const SecretManagement = lazy(() => import('src/pages/secret/management'));
 
+// API Playground
+const ApiPlayground = lazy(() => import('src/pages/api-playground'));
+
 // ----------------------------------------------------------------------
 
 function SuspenseOutlet() {
@@ -73,6 +76,7 @@ export const dashboardRoutes: RouteObject[] = [
       { path: 'export/management', element: <ExportManagement /> },
       { path: 'sub-account-management', element: <SubAccountManagement /> },
       { path: 'secret/management', element: <SecretManagement /> },
+      { path: 'api-playground', element: <ApiPlayground /> },
     ],
   },
 ];

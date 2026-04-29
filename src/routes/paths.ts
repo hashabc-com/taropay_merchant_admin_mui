@@ -35,6 +35,8 @@ export const paths = {
   secret: {
     management: '/secret/management',
   },
+  // API PLAYGROUND (API 调试)
+  apiPlayground: '/api-playground',
   // EXPORT MANAGEMENT (导出管理)
   exportManagement: '/export/management',
   // SUB-ACCOUNT MANAGEMENT (子账号管理)
