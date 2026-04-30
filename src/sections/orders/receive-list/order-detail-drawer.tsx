@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import { useLanguage } from 'src/context/language-provider';
 
 import { Iconify } from 'src/components/iconify';
+import { CopyableText } from 'src/components/copyable-text';
 
 import { ORDER_STATUS_MAP } from './types';
 import { PAYMENT_STATUS_MAP } from '../payment-list/hooks';
@@ -126,13 +127,13 @@ export function OrderDetailDrawer({ open, onClose, order, variant = 'receive' }:
               <SectionTitle>{t('orders.receiveOrders.merchantOrderNo')}</SectionTitle>
 
               <DetailRow label={t('orders.receiveOrders.merchantOrderNo')}>
-                {merchantOrderNo || '-'}
+                <CopyableText value={merchantOrderNo} />
               </DetailRow>
               <DetailRow label={t('orders.receiveOrders.platformOrderNo')}>
-                {platformOrderNo || '-'}
+                <CopyableText value={platformOrderNo} />
               </DetailRow>
               <DetailRow label={t('orders.receiveOrders.thirdPartyOrderNo')}>
-                {thirdPartyOrderNo || '-'}
+                <CopyableText value={thirdPartyOrderNo} />
               </DetailRow>
 
               <Divider />
