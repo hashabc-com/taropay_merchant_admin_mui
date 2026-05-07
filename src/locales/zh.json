@@ -174,7 +174,8 @@
     "paymentFee": "付款服务费",
     "collectionCount": "收款订单数",
     "paymentCount": "付款订单数",
-    "noChartData": "暂无图表数据"
+    "noChartData": "暂无图表数据",
+    "dateRangeMinWarning": "请选择至少两天的日期范围"
   },
   "fund": {
     "fundsDetail": {

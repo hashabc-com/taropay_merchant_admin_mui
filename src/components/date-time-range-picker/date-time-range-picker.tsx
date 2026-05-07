@@ -64,6 +64,8 @@ export interface DateTimeRangePickerProps {
   confirmText?: string;
   /** Quick-select presets. Pass `false` to hide. Defaults to built-in presets. */
   quickSelects?: QuickSelectOption[] | false;
+  /** Maximum selectable date. Dates after this will be disabled. */
+  maxDate?: Dayjs;
   /** sx props for the trigger root element */
   sx?: object;
 }
@@ -96,40 +98,45 @@ function getDefaultFormat(showTime?: boolean, showSeconds?: boolean): string {
 
 function getDefaultQuickSelects(
   showTime?: boolean,
-  t?: (key: string) => string
+  t?: (key: string) => string,
+  maxDate?: Dayjs
 ): QuickSelectOption[] {
   const startOfDay = (d: Dayjs) => (showTime ? d.startOf('day') : d);
   const endOfDay = (d: Dayjs) => (showTime ? d.endOf('day') : d);
+  const clampEnd = (d: Dayjs) => {
+    const end = endOfDay(d);
+    return maxDate && end.isAfter(maxDate, 'day') ? endOfDay(maxDate) : end;
+  };
 
   return [
     {
       label: t?.('common.datePicker.today') ?? '今天',
-      getValue: () => [startOfDay(dayjs()), endOfDay(dayjs())],
+      getValue: () => [startOfDay(dayjs()), clampEnd(dayjs())],
     },
     {
       label: t?.('common.datePicker.yesterday') ?? '昨天',
       getValue: () => [
         startOfDay(dayjs().subtract(1, 'day')),
-        endOfDay(dayjs().subtract(1, 'day')),
+        clampEnd(dayjs().subtract(1, 'day')),
       ],
     },
     {
       label: t?.('common.datePicker.last7Days') ?? '最近7天',
-      getValue: () => [startOfDay(dayjs().subtract(6, 'day')), endOfDay(dayjs())],
+      getValue: () => [startOfDay(dayjs().subtract(6, 'day')), clampEnd(dayjs())],
     },
     {
       label: t?.('common.datePicker.last30Days') ?? '最近30天',
-      getValue: () => [startOfDay(dayjs().subtract(29, 'day')), endOfDay(dayjs())],
+      getValue: () => [startOfDay(dayjs().subtract(29, 'day')), clampEnd(dayjs())],
     },
     {
       label: t?.('common.datePicker.thisMonth') ?? '本月',
-      getValue: () => [startOfDay(dayjs().startOf('month')), endOfDay(dayjs().endOf('month'))],
+      getValue: () => [startOfDay(dayjs().startOf('month')), clampEnd(dayjs().endOf('month'))],
     },
     {
       label: t?.('common.datePicker.lastMonth') ?? '上月',
       getValue: () => [
         startOfDay(dayjs().subtract(1, 'month').startOf('month')),
-        endOfDay(dayjs().subtract(1, 'month').endOf('month')),
+        clampEnd(dayjs().subtract(1, 'month').endOf('month')),
       ],
     },
   ];
@@ -372,6 +379,7 @@ export function DateTimeRangePicker({
   cancelText,
   confirmText,
   quickSelects,
+  maxDate,
   sx,
 }: DateTimeRangePickerProps) {
   const { t } = useLanguage();
@@ -385,7 +393,8 @@ export function DateTimeRangePicker({
   const [hoveredDate, setHoveredDate] = useState<Dayjs | null>(null);
 
   const displayFormat = formatProp || getDefaultFormat(showTime, showSeconds);
-  const presets = quickSelects === false ? [] : quickSelects || getDefaultQuickSelects(showTime, t);
+  const presets =
+    quickSelects === false ? [] : quickSelects || getDefaultQuickSelects(showTime, t, maxDate);
 
   const resolvedStartLabel = startLabel ?? t('common.datePicker.start');
   const resolvedEndLabel = endLabel ?? t('common.datePicker.end');
@@ -613,6 +622,7 @@ export function DateTimeRangePicker({
               <DateCalendar
                 value={calendarValue}
                 onChange={handleDateClick}
+                maxDate={maxDate}
                 slots={{ day: RangeDay as any }}
                 slotProps={{
                   day: {

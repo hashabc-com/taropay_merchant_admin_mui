@@ -174,7 +174,8 @@
     "paymentFee": "Payment Fee",
     "collectionCount": "Collection Orders",
     "paymentCount": "Payment Orders",
-    "noChartData": "No chart data available"
+    "noChartData": "No chart data available",
+    "dateRangeMinWarning": "Please select a date range of at least 2 days"
   },
   "orders": {
     "stats": {

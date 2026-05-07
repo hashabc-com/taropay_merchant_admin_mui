@@ -52,5 +52,8 @@ export interface ChartDataOfDay {
 export const getAmountInformation = () =>
   http.get<AmountInfo>('/customer/bill/v1/getAmountInformation');
 
-export const getChartDataOfDay = () =>
-  http.post<ChartDataOfDay>('/customer/home/v1/chartDataOfDay');
+export const getChartDataOfDay = (params?: { startTime?: string; endTime?: string }) =>
+  // const fd = new FormData();
+  // if (params?.startTime) fd.append('startTime', params.startTime);
+  // if (params?.endTime) fd.append('endTime', params.endTime);
+  http.post<ChartDataOfDay>('/customer/home/v1/chartDataOfDay', params);

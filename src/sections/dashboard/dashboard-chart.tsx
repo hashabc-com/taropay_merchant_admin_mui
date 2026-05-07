@@ -1,6 +1,7 @@
 import type { ApexOptions } from 'apexcharts';
 import type { DayChartData } from 'src/api/dashboard';
 
+import dayjs from 'dayjs';
 import ReactApexChart from 'react-apexcharts';
 import { useMemo, useState, useEffect } from 'react';
 
@@ -9,6 +10,7 @@ import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
 import Tabs from '@mui/material/Tabs';
 import Stack from '@mui/material/Stack';
+import Skeleton from '@mui/material/Skeleton';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
@@ -18,6 +20,12 @@ import { useConvertAmount } from 'src/hooks/use-convert-amount';
 
 import { useLanguage } from 'src/context/language-provider';
 import { BookingIllustration } from 'src/assets/illustrations';
+
+import {
+  DateTimeRangePicker,
+  type QuickSelectOption,
+  type DateTimeRangeValue,
+} from 'src/components/date-time-range-picker';
 
 // ----------------------------------------------------------------------
 // ApexCharts renders in SVG/Canvas and cannot resolve CSS variables.
@@ -43,14 +51,43 @@ function resolveChartColors() {
 
 type Props = {
   chartData?: DayChartData[];
+  isLoading?: boolean;
+  dateRange: DateTimeRangeValue;
+  onDateChange: (value: DateTimeRangeValue) => void;
 };
 
 type MetricKey = 'amount' | 'count' | 'service';
 
-export function DashboardChart({ chartData }: Props) {
+export function DashboardChart({ chartData, isLoading, dateRange, onDateChange }: Props) {
   const theme = useTheme();
   const { t } = useLanguage();
   const { mode, systemMode } = useColorScheme();
+
+  const quickSelects: QuickSelectOption[] = useMemo(
+    () => [
+      {
+        label: t('common.datePicker.last7Days'),
+        getValue: () => [dayjs().subtract(6, 'day'), dayjs()],
+      },
+      {
+        label: t('common.datePicker.last30Days'),
+        getValue: () => [dayjs().subtract(29, 'day'), dayjs()],
+      },
+      {
+        label: t('common.datePicker.thisMonth'),
+        getValue: () => [dayjs().startOf('month'), dayjs()],
+      },
+      {
+        label: t('common.datePicker.lastMonth'),
+        getValue: () => [
+          dayjs().subtract(1, 'month').startOf('month'),
+          dayjs().subtract(1, 'month').endOf('month'),
+        ],
+      },
+    ],
+    [t]
+  );
+
   const convertAmount = useConvertAmount();
   const [metric, setMetric] = useState<MetricKey>('amount');
 
@@ -180,34 +217,48 @@ export function DashboardChart({ chartData }: Props) {
     <Card>
       <CardHeader
         title={t('dashboard.collectionPaymentStats')}
-        subheader={t('dashboard.recentDaysComparison')}
         action={
-          <Tabs
-            value={metric}
-            onChange={(_, v) => setMetric(v)}
-            sx={{
-              '& .MuiTab-root': {
-                minWidth: 'auto',
-                px: 2,
-                py: 0.5,
+          <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+            <DateTimeRangePicker
+              value={dateRange}
+              onChange={onDateChange}
+              size="small"
+              maxDate={dayjs()}
+              quickSelects={quickSelects}
+            />
+            <Tabs
+              value={metric}
+              onChange={(_, v) => setMetric(v)}
+              sx={{
+                '& .MuiTab-root': {
+                  minWidth: 'auto',
+                  px: 2,
+                  py: 0.5,
+                  minHeight: 36,
+                  fontSize: 'body2.fontSize',
+                },
+                '& .MuiTabs-indicator': { borderRadius: 1 },
                 minHeight: 36,
-                fontSize: 'body2.fontSize',
-              },
-              '& .MuiTabs-indicator': { borderRadius: 1 },
-              minHeight: 36,
-            }}
-          >
-            <Tab label={t('dashboard.totalAmount')} value="amount" />
-            <Tab label={t('dashboard.orderCount')} value="count" />
-            <Tab label={t('dashboard.serviceFee')} value="service" />
-          </Tabs>
+              }}
+            >
+              <Tab label={t('dashboard.totalAmount')} value="amount" />
+              <Tab label={t('dashboard.orderCount')} value="count" />
+              <Tab label={t('dashboard.serviceFee')} value="service" />
+            </Tabs>
+          </Stack>
         }
         sx={{ p: 3, pb: 0 }}
       />
 
       <CardContent sx={{ pt: 2 }}>
         <Box sx={{ height: 320 }}>
-          {processedData.length > 0 ? (
+          {isLoading ? (
+            <Stack spacing={2} sx={{ height: 1, justifyContent: 'center', px: 2 }}>
+              <Skeleton variant="rounded" height={40} />
+              <Skeleton variant="rounded" height={200} />
+              <Skeleton variant="rounded" width="60%" height={24} />
+            </Stack>
+          ) : processedData.length > 0 ? (
             <ReactApexChart
               key={resolvedMode}
               type="area"

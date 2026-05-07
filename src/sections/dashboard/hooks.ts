@@ -18,10 +18,10 @@ export function useDashboardAmount() {
   return { amountInfo, isLoading };
 }
 
-export function useDashboardChart() {
-  const key = useListSWRKey('dashboard', 'chart-data');
+export function useDashboardChart(params?: { startTime?: string; endTime?: string }) {
+  const key = useListSWRKey('dashboard', 'chart-data', params);
 
-  const { data, isLoading } = useSWR(key, () => getChartDataOfDay(), {
+  const { data, isLoading } = useSWR(key, () => getChartDataOfDay(params), {
     revalidateOnFocus: false,
   });
 
