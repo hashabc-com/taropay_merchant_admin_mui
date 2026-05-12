@@ -66,7 +66,7 @@ export function OrderListView() {
     async (record: Order, status: number) => {
       try {
         const res = await payOutNotify({ transId: record.transId, status });
-        if (res.code == 200) {
+        if (res.code == 1) {
           toast.success(t('common.operationSuccess'));
         } else {
           toast.error(res.message || t('common.operationFailed'));

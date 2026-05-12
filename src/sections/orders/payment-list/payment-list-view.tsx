@@ -75,7 +75,7 @@ export function PaymentListView() {
     async (record: PaymentOrder, status: number) => {
       try {
         const res = await payInNotify({ transId: record.transactionid || '', status });
-        if (res.code == 200) {
+        if (res.code == 1) {
           toast.success(t('common.operationSuccess'));
         } else {
           toast.error(res.message || t('common.operationFailed'));
